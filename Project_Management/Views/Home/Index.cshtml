@@ -1,8 +1,81 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<Project_Management.Models.Project>
+@{
+    ViewData["Title"] = "Trang chủ";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center mt-4">
+    <div class="p-5 bg-primary text-white rounded-4 shadow">
+        <h2 class="fw-bold">HỆ THỐNG QUẢN LÝ CÔNG VIỆC DỰ ÁN</h2>
+        <p>Theo dõi tiến độ - Quản lý hiệu quả</p>
+        <a class="btn btn-warning fw-bold" href="#">Bắt đầu</a>
+    </div>
 </div>
+
+<div class="row mt-5 text-center">
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3>@ViewBag.TotalProjects</h3>
+                <p class="text-muted">Dự án đang thực hiện</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3>@ViewBag.TotalTasks</h3>
+                <p class="text-muted">Công việc được giao</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3>@ViewBag.TotalMembers</h3>
+                <p class="text-muted">Thành viên tham gia</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3>@ViewBag.TotalModels</h3>
+                <p class="text-muted">Mô hình phát triển</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4 class="mt-5 fw-bold text-primary">Dự án gần đây</h4>
+<table class="table table-striped mt-3">
+    <thead class="table-primary">
+        <tr>
+            <th>Tên dự án</th>
+            <th>Mô tả</th>
+            <th>Số lượng tham gia</th>
+            <th>Mô hình phát triển</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr><td colspan="4" class="text-center text-muted">Chưa có dữ liệu</td></tr>
+        }
+        else
+        {
+            @foreach (var project in Model)
+            {
+                <tr>
+                    <td>@project.Name</td>
+                    <td>@project.Description</td>
+                    <td>@project.StartDate</td>
+                    <td>@project.EndDate</td>
+                    <td>@project.Model</td>
+                    <td>@project.Status</td>
+                    <td>@project.CreatedAt</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+

@@ -15,7 +15,7 @@ namespace Project_Management.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return View(new List<Project_Management.Models.Project>());
         }
 
         public IActionResult Privacy()
