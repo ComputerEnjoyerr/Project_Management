@@ -5,19 +5,21 @@ namespace Project_Management.Models;
 
 public partial class TaskHistory
 {
-    public int Id { get; set; }
-
-    public string OldValue { get; set; } = null!;
-
-    public string NewValue { get; set; } = null!;
-
-    public DateTime? ChangeAt { get; set; }
+    public int HistoryId { get; set; }
 
     public int TaskId { get; set; }
 
-    public string ChangedByUserId { get; set; } = null!;
+    public int ChangedByUserId { get; set; }
 
-    public virtual AspNetUser ChangedByUser { get; set; } = null!;
+    public DateTime? ChangeDate { get; set; }
 
-    public virtual TaskItem Task { get; set; } = null!;
+    public string? OldStatus { get; set; }
+
+    public string? NewStatus { get; set; }
+
+    public string? Note { get; set; }
+
+    public virtual User ChangedByUser { get; set; } = null!;
+
+    public virtual Objective Task { get; set; } = null!;
 }

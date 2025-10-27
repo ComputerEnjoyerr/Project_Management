@@ -5,17 +5,17 @@ namespace Project_Management.Models;
 
 public partial class Comment
 {
-    public int Id { get; set; }
-
-    public string Content { get; set; } = null!;
+    public int CommentId { get; set; }
 
     public int TaskId { get; set; }
 
-    public string UserId { get; set; } = null!;
+    public int UserId { get; set; }
+
+    public string? Content { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 
-    public virtual TaskItem Task { get; set; } = null!;
+    public virtual Objective Task { get; set; } = null!;
 
-    public virtual AspNetUser User { get; set; } = null!;
+    public virtual User User { get; set; } = null!;
 }

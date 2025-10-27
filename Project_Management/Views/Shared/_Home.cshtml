@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - Quản lý công việc dự án</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">Nhóm 1</div>
+        <nav class="menu">
+            <a href="/">Trang chủ</a>
+            <a href="#">Dự án</a>
+            <a href="#">Công việc</a>
+            <a href="#">Thành viên</a>
+            <a href="#">Lịch trình</a>
+            <a href="#">Mô hình</a>
+        </nav>
+        <div class="navbar-right">
+            <a href="/Account/Login" class="btn-login">Đăng nhập</a>
+            <a href="/Account/Register" class="btn-register">Đăng ký</a>
+        </div>
+    </header>
+
+    <main class="container">
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        © 2025 - Quản lý công việc của dự án | Nhóm 1
+    </footer>
+</body>
+</html>

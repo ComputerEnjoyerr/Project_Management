@@ -5,21 +5,37 @@ namespace Project_Management.Models;
 
 public partial class Project
 {
-    public int Id { get; set; }
+    public int ProjectId { get; set; }
 
     public string Name { get; set; } = null!;
 
     public string? Description { get; set; }
 
-    public string OwnerId { get; set; } = null!;
+    public string? Methodology { get; set; }
 
-    public DateTime? CreateAt { get; set; }
+    public string? Status { get; set; }
 
-    public virtual AspNetUser Owner { get; set; } = null!;
+    public DateOnly? StartDate { get; set; }
+
+    public DateOnly? EndDate { get; set; }
+
+    public DateTime? CompletedAt { get; set; }
+
+    public int CreatedBy { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
+
+    public virtual ICollection<ChatRoom> ChatRooms { get; set; } = new List<ChatRoom>();
+
+    public virtual User CreatedByNavigation { get; set; } = null!;
+
+    public virtual ICollection<Milestone> Milestones { get; set; } = new List<Milestone>();
+
+    public virtual ICollection<Objective> Objectives { get; set; } = new List<Objective>();
 
     public virtual ICollection<ProjectMember> ProjectMembers { get; set; } = new List<ProjectMember>();
 
-    public virtual ICollection<Stage> Stages { get; set; } = new List<Stage>();
+    public virtual ICollection<Sprint> Sprints { get; set; } = new List<Sprint>();
 
-    public virtual ICollection<TaskItem> TaskItems { get; set; } = new List<TaskItem>();
+    public virtual ICollection<Stage> Stages { get; set; } = new List<Stage>();
 }

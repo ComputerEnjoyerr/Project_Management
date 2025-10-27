@@ -5,17 +5,21 @@ namespace Project_Management.Models;
 
 public partial class TimeEntry
 {
-    public int Id { get; set; }
+    public int TimeEntryId { get; set; }
 
     public int TaskId { get; set; }
 
-    public string UserId { get; set; } = null!;
+    public int UserId { get; set; }
 
-    public double HoursWorked { get; set; }
+    public DateTime? StartTime { get; set; }
 
-    public DateTime? EntryDate { get; set; }
+    public DateTime? EndTime { get; set; }
 
-    public virtual TaskItem Task { get; set; } = null!;
+    public int? Duration { get; set; }
 
-    public virtual AspNetUser User { get; set; } = null!;
+    public string? Note { get; set; }
+
+    public virtual Objective Task { get; set; } = null!;
+
+    public virtual User User { get; set; } = null!;
 }

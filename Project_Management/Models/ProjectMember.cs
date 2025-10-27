@@ -5,17 +5,17 @@ namespace Project_Management.Models;
 
 public partial class ProjectMember
 {
-    public int Id { get; set; }
+    public int ProjectMemberId { get; set; }
 
     public int ProjectId { get; set; }
 
-    public string UserId { get; set; } = null!;
+    public int UserId { get; set; }
 
-    public string Role { get; set; } = null!;
+    public string? Role { get; set; }
 
     public DateTime? JoinedAt { get; set; }
 
     public virtual Project Project { get; set; } = null!;
 
-    public virtual AspNetUser User { get; set; } = null!;
+    public virtual User User { get; set; } = null!;
 }
