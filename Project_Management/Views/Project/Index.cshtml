@@ -1,0 +1,152 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewBag.Title = "Dự án";
+    Layout = "~/Views/Shared/_Home.cshtml";
+}
+<div class="project-header shadow-sm">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h4>Website bán hàng</h4>
+            <div class="text-muted small">PM: <strong>Trần B</strong> | Phương pháp: <span class="badge bg-primary">Agile</span></div>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary btn-sm"><i class="fa fa-edit"></i> Chỉnh sửa</button>
+            <button class="btn btn-outline-danger btn-sm"><i class="fa fa-trash"></i> Xóa</button>
+        </div>
+    </div>
+    <div class="mt-3 mb-5">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="small text-muted">Tiến độ dự án</div>
+            <div class="small text-muted">75%</div>
+        </div>
+        <div class="progress">
+            <div class="progress-bar bg-success" style="width:75%"></div>
+        </div>
+    </div>
+</div>
+<!-- Tabs -->
+<ul class="nav nav-tabs" id="projectTabs" role="tablist">
+    <li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#overview">Tổng quan</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tasks">Công việc</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#members">Thành viên</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#chat">Chat nhóm</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#timeline">Lịch & Tiến độ</button></li>
+</ul>
+
+
+<div class="tab-content mt-3">
+    <!-- Tổng quan -->
+    <div class="tab-pane fade show active tab-content-section" id="overview">
+        <h5>Thông tin dự án</h5>
+        <p><strong>Mô tả:</strong> Dự án xây dựng website thương mại điện tử, hỗ trợ thanh toán online, quản lý kho và báo cáo bán hàng.</p>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card p-3 mb-3">
+                    <strong>Ngày bắt đầu:</strong>
+                    <div>2025-09-15</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3 mb-3">
+                    <strong>Ngày kết thúc:</strong>
+                    <div>2025-12-30</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3 mb-3">
+                    <strong>Trạng thái:</strong>
+                    <div><span class="badge bg-success">Đang triển khai</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Công việc -->
+    <div class="tab-pane fade tab-content-section" id="tasks">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5>Bảng công việc (Kanban)</h5>
+            <button class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Thêm task</button>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="kanban-column">
+                    <strong>Todo</strong>
+                    <div class="card-task p-2 mt-2 bg-white shadow-sm rounded">
+                        <strong>Thiết kế giao diện</strong>
+                        <div class="small text-muted">Assignee: TB | Priority: Low</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kanban-column">
+                    <strong>In Progress</strong>
+                    <div class="card-task p-2 mt-2 bg-white shadow-sm rounded">
+                        <strong>API Auth</strong>
+                        <div class="small text-muted">Assignee: NA | Priority: Medium</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kanban-column">
+                    <strong>Review</strong>
+                    <div class="card-task p-2 mt-2 bg-white shadow-sm rounded">
+                        <strong>Unit Test</strong>
+                        <div class="small text-muted">Assignee: TP | Priority: Normal</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kanban-column">
+                    <strong>Done</strong>
+                    <div class="card-task p-2 mt-2 bg-white shadow-sm rounded">
+                        <strong>Setup DB</strong>
+                        <div class="small text-muted">Completed by: TT</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Thành viên -->
+    <div class="tab-pane fade tab-content-section" id="members">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5>Danh sách thành viên</h5>
+            <button class="btn btn-outline-primary btn-sm"><i class="fa fa-user-plus"></i> Thêm thành viên</button>
+        </div>
+        <table class="table table-hover align-middle">
+            <thead><tr><th>Thành viên</th><th>Vai trò</th><th>Ngày tham gia</th><th>Thao tác</th></tr></thead>
+            <tbody>
+                <tr><td><div class="d-flex align-items-center"><div class="me-2 avatar">TB</div>Trần Bình</div></td><td><span class="badge badge-role">Project Manager</span></td><td>2025-09-15</td><td><button class="btn btn-sm btn-outline-danger"><i class="fa fa-user-minus"></i></button></td></tr>
+                <tr><td><div class="d-flex align-items-center"><div class="me-2 avatar">NA</div>Nguyễn Anh</div></td><td><span class="badge bg-light text-dark">Developer</span></td><td>2025-09-16</td><td><button class="btn btn-sm btn-outline-danger"><i class="fa fa-user-minus"></i></button></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- Chat nhóm -->
+    <div class="tab-pane fade tab-content-section" id="chat">
+        <h5>Chat nhóm - Website bán hàng</h5>
+        <div class="chat-box mb-3">
+            <div class="d-flex mb-2">
+                <div class="me-2 avatar">TB</div>
+                <div><strong>Trần B</strong> <div class="small text-muted">10:20</div><div>Push branch feature/login</div></div>
+            </div>
+            <div class="d-flex mb-2 justify-content-end">
+                <div class="text-end"><strong>Nguyễn A</strong> <div class="small text-muted">10:25</div><div>Ok đã nhận</div></div>
+                <div class="ms-2 avatar">NA</div>
+            </div>
+        </div>
+        <div class="d-flex">
+            <input class="form-control form-control-sm me-2" placeholder="Nhập tin nhắn...">
+            <button class="btn btn-primary btn-sm">Gửi</button>
+        </div>
+    </div>
+
+
+    <!-- Lịch & tiến độ -->
+    <div class="tab-pane fade tab-content-section" id="timeline">
+        <h5>Lịch và Tiến độ</h5>
+        <p>Hiển thị lịch deadline, sprint, milestone dưới dạng Gantt hoặc Calendar (chưa hiển thị trong mockup).</p>
+        <div class="alert alert-info">Tính năng đang được phát triển...</div>
+    </div>
+</div>
