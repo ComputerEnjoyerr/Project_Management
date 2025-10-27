@@ -7,14 +7,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project_Management.Data;
 
-
 #nullable disable
 
 namespace Project_Management.Migrations
 {
     [DbContext(typeof(ProjectManagementDbContext))]
-    [Migration("20251027114450_mainDB")]
-    partial class mainDB
+    [Migration("20251027140602_mainDb")]
+    partial class mainDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

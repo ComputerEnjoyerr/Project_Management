@@ -61,6 +61,74 @@
         .task-due-soon {
             color: #b91c1c
         }
+
+        .task-card {
+            border-left: 5px solid #0d6efd;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+            .task-card:hover {
+                background: #f8fafc;
+                transform: scale(1.01);
+            }
+
+        .badge-status {
+            font-size: 0.75rem;
+        }
+
+        .filter-bar {
+            background: #fff;
+            border-radius: 8px;
+            padding: 10px 16px;
+        }
+
+        .chat-sidebar {
+            height: 100vh;
+            background: #fff;
+            border-right: 1px solid #e6e9ef;
+            overflow-y: auto;
+        }
+
+        .chat-room {
+            cursor: pointer;
+            padding: 12px;
+            border-bottom: 1px solid #f1f3f5;
+            transition: 0.2s;
+        }
+
+            .chat-room:hover {
+                background: #f8fafc;
+            }
+
+            .chat-room.active {
+                background: #e9f0ff;
+                border-left: 4px solid #0d6efd;
+            }
+
+        .chat-box {
+            height: 70vh;
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #e9eef6;
+            padding: 12px;
+        }
+
+        .message-input {
+            background: #fff;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .member-list {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #e9eef6;
+            padding: 12px;
+            height: 70vh;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
@@ -68,19 +136,19 @@
         <div class="row">
             <!-- Sidebar -->
             <nav class="col-2 sidebar p-3 d-flex flex-column">
-                <h5 class="mb-4">PM System</h5>
+                <h3 class="mb-4">Project Management System</h3>
                 <ul class="nav flex-column gap-2">
                     <li class="nav-item"><a class="nav-link active" asp-controller="Home" asp-action="Index"> <i class="fa fa-home me-2"></i> Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Projects" asp-action="Index"> <i class="fa fa-folder-open me-2"></i> Dự án</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Objectives" asp-action="MyTasks"> <i class="fa fa-tasks me-2"></i> Công việc của tôi</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Chat" asp-action="Index"> <i class="fa fa-comments me-2"></i> Tin nhắn</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Reports" asp-action="Index"> <i class="fa fa-chart-pie me-2"></i> Báo cáo</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Project" asp-action="Index"> <i class="fa fa-folder-open me-2"></i> Dự án</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Objective" asp-action="Index"> <i class="fa fa-tasks me-2"></i> Công việc của tôi</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="ChatRoom" asp-action="Index"> <i class="fa fa-comments me-2"></i> Tin nhắn</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Report" asp-action="Index"> <i class="fa fa-chart-pie me-2"></i> Báo cáo</a></li>
                 </ul>
 
                 <div class="mt-auto small text-muted">
                     <div>Signed in as <strong>@User.Identity?.Name</strong></div>
                     <div class="mt-2">
-                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-info btn-sm">Đăng Nhập</a>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary btn-sm">Đăng Nhập</a>
                         <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-danger btn-sm">Đăng xuất</a>
                     </div>
                 </div>
@@ -94,6 +162,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     @RenderSection("Scripts", required: false)
+
 </body>
 </html>

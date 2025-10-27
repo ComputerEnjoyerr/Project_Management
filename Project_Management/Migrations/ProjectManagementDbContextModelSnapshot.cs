@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project_Management.Data;
 
-
 #nullable disable
 
 namespace Project_Management.Migrations

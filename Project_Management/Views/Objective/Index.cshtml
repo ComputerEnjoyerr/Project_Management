@@ -1,0 +1,127 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewBag.Title = "Công việc của tôi";
+    Layout = "~/Views/Shared/_Home.cshtml";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Công việc của tôi</h3>
+    <div class="text-muted small">Xin chào, <strong>Nguyễn Văn A</strong></div>
+</div>
+
+
+<!-- Filter Bar -->
+<div class="filter-bar d-flex flex-wrap justify-content-between align-items-center mb-4 shadow-sm">
+    <div class="d-flex gap-2 align-items-center">
+        <label class="form-label mb-0 small">Trạng thái:</label>
+        <select id="statusFilter" class="form-select form-select-sm" style="width:160px">
+            <option value="">Tất cả</option>
+            <option value="Todo">Todo</option>
+            <option value="InProgress">In Progress</option>
+            <option value="Review">Review</option>
+            <option value="Done">Done</option>
+        </select>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+        <label class="form-label mb-0 small">Độ ưu tiên:</label>
+        <select id="priorityFilter" class="form-select form-select-sm" style="width:160px">
+            <option value="">Tất cả</option>
+            <option>Low</option>
+            <option>Normal</option>
+            <option>High</option>
+            <option>Critical</option>
+        </select>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+        <label class="form-label mb-0 small">Dự án:</label>
+        <select id="projectFilter" class="form-select form-select-sm" style="width:200px">
+            <option value="">Tất cả</option>
+            <option>Website bán hàng</option>
+            <option>Ứng dụng nội bộ</option>
+        </select>
+    </div>
+    <div>
+        <button class="btn btn-sm btn-outline-primary" onclick="applyFilters()"><i class="fa fa-filter"></i> Lọc</button>
+    </div>
+</div>
+
+<!-- Task List -->
+<div class="row g-3" id="taskList">
+    <!-- Example Card -->
+    <div class="col-md-6">
+        <div class="card task-card p-3 shadow-sm" onclick="openTaskDetail(1)">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Thiết kế giao diện</h6>
+                <span class="badge bg-secondary badge-status">Todo</span>
+            </div>
+            <div class="small text-muted">Dự án: Website bán hàng</div>
+            <div class="small">Hạn: <span class="text-danger">2025-11-02</span></div>
+            <div class="mt-2 d-flex justify-content-between align-items-center">
+                <div class="small text-muted">Ưu tiên: <strong class="text-danger">High</strong></div>
+                <button class="btn btn-sm btn-outline-success" onclick="markDone(event,1)">Hoàn thành</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-6">
+        <div class="card task-card p-3 shadow-sm" onclick="openTaskDetail(2)">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">API Đăng nhập</h6>
+                <span class="badge bg-warning text-dark badge-status">In Progress</span>
+            </div>
+            <div class="small text-muted">Dự án: Ứng dụng nội bộ</div>
+            <div class="small">Hạn: <span class="text-success">2025-11-10</span></div>
+            <div class="mt-2 d-flex justify-content-between align-items-center">
+                <div class="small text-muted">Ưu tiên: <strong>Normal</strong></div>
+                <button class="btn btn-sm btn-outline-secondary" onclick="openTaskDetail(2)">Chi tiết</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-6">
+        <div class="card task-card p-3 shadow-sm" onclick="openTaskDetail(3)">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Tối ưu cơ sở dữ liệu</h6>
+                <span class="badge bg-success badge-status">Done</span>
+            </div>
+            <div class="small text-muted">Dự án: Website bán hàng</div>
+            <div class="small">Hoàn thành: <span class="text-success">2025-10-25</span></div>
+            <div class="mt-2 d-flex justify-content-between align-items-center">
+                <div class="small text-muted">Ưu tiên: <strong>Low</strong></div>
+                <button class="btn btn-sm btn-outline-secondary" onclick="viewHistory(event,3)">Xem lịch sử</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Empty State -->
+<div id="emptyState" class="text-center text-muted my-5" style="display:none">
+    <i class="fa fa-inbox fa-3x mb-3"></i>
+    <div>Không có công việc nào phù hợp với bộ lọc</div>
+</div>
+
+<script>
+    function applyFilters(){
+    alert('Lọc công việc theo điều kiện (mock)');
+    }
+
+
+    function openTaskDetail(id){
+    alert('Mở chi tiết công việc ID: '+id+' (mock)');
+    }
+
+
+    function markDone(event, id){
+    event.stopPropagation();
+    alert('Đánh dấu hoàn thành task '+id+' (mock)');
+    }
+
+
+    function viewHistory(event, id){
+    event.stopPropagation();
+    alert('Xem lịch sử thay đổi của task '+id+' (mock)');
+    }
+</script>
