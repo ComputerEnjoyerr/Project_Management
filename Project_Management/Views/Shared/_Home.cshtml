@@ -1,33 +1,99 @@
 ﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="utf-8" />
-    <title>@ViewBag.Title - Quản lý công việc dự án</title>
-    <link rel="stylesheet" href="~/css/site.css" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title - Project Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f6f8fb;
+        }
+
+        .sidebar {
+            height: 100vh;
+            background: #fff;
+            border-right: 1px solid #e6e9ef;
+        }
+
+        .card-task {
+            cursor: grab;
+        }
+
+        .kanban-column {
+            min-height: 300px;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .chat-box {
+            height: 400px;
+            overflow: auto;
+            background: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e9eef6
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #6c757d;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .badge-priority-low {
+            background: #dbeafe;
+            color: #075985
+        }
+
+        .badge-priority-high {
+            background: #fee2e2;
+            color: #991b1b
+        }
+
+        .task-due-soon {
+            color: #b91c1c
+        }
+    </style>
 </head>
 <body>
-    <header class="navbar">
-        <div class="logo">Nhóm 1</div>
-        <nav class="menu">
-            <a href="/">Trang chủ</a>
-            <a href="#">Dự án</a>
-            <a href="#">Công việc</a>
-            <a href="#">Thành viên</a>
-            <a href="#">Lịch trình</a>
-            <a href="#">Mô hình</a>
-        </nav>
-        <div class="navbar-right">
-            <a href="/Account/Login" class="btn-login">Đăng nhập</a>
-            <a href="/Account/Register" class="btn-register">Đăng ký</a>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-2 sidebar p-3 d-flex flex-column">
+                <h5 class="mb-4">PM System</h5>
+                <ul class="nav flex-column gap-2">
+                    <li class="nav-item"><a class="nav-link active" asp-controller="Home" asp-action="Index"> <i class="fa fa-home me-2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Projects" asp-action="Index"> <i class="fa fa-folder-open me-2"></i> Dự án</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Objectives" asp-action="MyTasks"> <i class="fa fa-tasks me-2"></i> Công việc của tôi</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Chat" asp-action="Index"> <i class="fa fa-comments me-2"></i> Tin nhắn</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Reports" asp-action="Index"> <i class="fa fa-chart-pie me-2"></i> Báo cáo</a></li>
+                </ul>
+
+                <div class="mt-auto small text-muted">
+                    <div>Signed in as <strong>@User.Identity?.Name</strong></div>
+                    <div class="mt-2">
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-info btn-sm">Đăng Nhập</a>
+                        <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-danger btn-sm">Đăng xuất</a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-10 p-4">
+                @RenderBody()
+            </main>
         </div>
-    </header>
+    </div>
 
-    <main class="container">
-        @RenderBody()
-    </main>
-
-    <footer class="footer">
-        © 2025 - Quản lý công việc của dự án | Nhóm 1
-    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
