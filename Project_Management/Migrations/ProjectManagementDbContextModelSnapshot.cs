@@ -33,9 +33,6 @@ namespace Project_Management.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
@@ -74,7 +71,7 @@ namespace Project_Management.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("ApplicationUser");
                 });
 
             modelBuilder.Entity("Project_Management.Models.ChatRoom", b =>

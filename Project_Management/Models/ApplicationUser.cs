@@ -8,7 +8,7 @@ namespace Project_Management.Models;
 public partial class ApplicationUser : IdentityUser
 {
 
-    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
+    //public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
     [NotMapped]
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
     [NotMapped]

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Project_Management.Data;
 using Project_Management.Models;
@@ -21,7 +21,26 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.S
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
+    // Tạo roles nếu chưa có
+    string[] roles = new[] { "Admin", "User" };
+    foreach (var r in roles)
+        if (!await roleMgr.RoleExistsAsync(r)) await roleMgr.CreateAsync(new IdentityRole(r));
+
+    // Tạo admin user nếu chưa có
+    var adminEmail = "admin@local.test";
+    var admin = await userMgr.FindByEmailAsync(adminEmail);
+    if (admin == null)
+    {
+        admin = new ApplicationUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
+        await userMgr.CreateAsync(admin, "Admin@123"); // mật khẩu phải đủ mạnh theo policy
+        await userMgr.AddToRoleAsync(admin, "Admin");
+    }
+}
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

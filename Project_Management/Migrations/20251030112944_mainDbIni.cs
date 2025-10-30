@@ -12,11 +12,10 @@ namespace Project_Management.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "ApplicationUser",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -34,7 +33,7 @@ namespace Project_Management.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_ApplicationUser", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -55,7 +54,7 @@ namespace Project_Management.Migrations
                     table.ForeignKey(
                         name: "FK__Notificat__UserI__71D1E811",
                         column: x => x.UserID,
-                        principalTable: "Users",
+                        principalTable: "ApplicationUser",
                         principalColumn: "Id");
                 });
 
@@ -81,7 +80,7 @@ namespace Project_Management.Migrations
                     table.ForeignKey(
                         name: "FK__Projects__Create__3F466844",
                         column: x => x.CreatedBy,
-                        principalTable: "Users",
+                        principalTable: "ApplicationUser",
                         principalColumn: "Id");
                 });
 
@@ -150,7 +149,7 @@ namespace Project_Management.Migrations
                     table.ForeignKey(
                         name: "FK__ProjectMe__UserI__44FF419A",
                         column: x => x.UserID,
-                        principalTable: "Users",
+                        principalTable: "ApplicationUser",
                         principalColumn: "Id");
                 });
 
@@ -222,7 +221,7 @@ namespace Project_Management.Migrations
                     table.ForeignKey(
                         name: "FK__Messages__Sender__6477ECF3",
                         column: x => x.SenderID,
-                        principalTable: "Users",
+                        principalTable: "ApplicationUser",
                         principalColumn: "Id");
                 });
 
@@ -251,12 +250,12 @@ namespace Project_Management.Migrations
                     table.ForeignKey(
                         name: "FK__Objective__Assig__5629CD9C",
                         column: x => x.AssignedTo,
-                        principalTable: "Users",
+                        principalTable: "ApplicationUser",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK__Objective__Creat__571DF1D5",
                         column: x => x.CreatedBy,
-                        principalTable: "Users",
+                        principalTable: "ApplicationUser",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK__Objective__Miles__5535A963",
@@ -297,7 +296,7 @@ namespace Project_Management.Migrations
                     table.ForeignKey(
                         name: "FK__Comments__UserID__5BE2A6F2",
                         column: x => x.UserID,
-                        principalTable: "Users",
+                        principalTable: "ApplicationUser",
                         principalColumn: "Id");
                 });
 
@@ -320,7 +319,7 @@ namespace Project_Management.Migrations
                     table.ForeignKey(
                         name: "FK__TaskHisto__Chang__6D0D32F4",
                         column: x => x.ChangedByUserID,
-                        principalTable: "Users",
+                        principalTable: "ApplicationUser",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK__TaskHisto__TaskI__6C190EBB",
@@ -353,7 +352,7 @@ namespace Project_Management.Migrations
                     table.ForeignKey(
                         name: "FK__TimeEntri__UserI__68487DD7",
                         column: x => x.UserID,
-                        principalTable: "Users",
+                        principalTable: "ApplicationUser",
                         principalColumn: "Id");
                 });
 
@@ -503,7 +502,7 @@ namespace Project_Management.Migrations
                 name: "Projects");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "ApplicationUser");
         }
     }
 }

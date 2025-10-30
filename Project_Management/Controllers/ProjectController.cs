@@ -7,7 +7,7 @@ namespace Project_Management.Controllers
     {
         public IActionResult Index()
         {
-            var userName = User.FindFirstValue(ClaimTypes.Name);
+            var userName = User.FindFirstValue(ClaimTypes.Email);
             if (userName == null)
             {
                 return Redirect("~/Identity/Account/Login"); // Identity tự động bỏ qua Pages
