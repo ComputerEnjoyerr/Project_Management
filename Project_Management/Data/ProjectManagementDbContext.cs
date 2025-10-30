@@ -40,7 +40,7 @@ public partial class ProjectManagementDbContext : DbContext
 
     public virtual DbSet<TimeEntry> TimeEntries { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
+    // public virtual DbSet<ApplicationUser> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -83,6 +83,7 @@ public partial class ProjectManagementDbContext : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.Comments)
                 .HasForeignKey(d => d.UserId)
+                .HasPrincipalKey(u => u.Id) // 👈 thêm dòng này
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Comments__UserID__5BE2A6F2");
         });
@@ -105,6 +106,7 @@ public partial class ProjectManagementDbContext : DbContext
 
             entity.HasOne(d => d.Sender).WithMany(p => p.Messages)
                 .HasForeignKey(d => d.SenderId)
+                .HasPrincipalKey(u => u.Id) // 👈 thêm dòng này
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Messages__Sender__6477ECF3");
         });
@@ -138,6 +140,7 @@ public partial class ProjectManagementDbContext : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.Notifications)
                 .HasForeignKey(d => d.UserId)
+                .HasPrincipalKey(u => u.Id) // 👈 thêm dòng này
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Notificat__UserI__71D1E811");
         });
@@ -165,6 +168,7 @@ public partial class ProjectManagementDbContext : DbContext
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.ObjectiveCreatedByNavigations)
                 .HasForeignKey(d => d.CreatedBy)
+                .HasPrincipalKey(u => u.Id) // 👈 thêm dòng này
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Objective__Creat__571DF1D5");
 
@@ -201,6 +205,7 @@ public partial class ProjectManagementDbContext : DbContext
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.Projects)
                 .HasForeignKey(d => d.CreatedBy)
+                .HasPrincipalKey(u => u.Id) // 👈 thêm dòng này
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Projects__Create__3F466844");
         });
@@ -226,6 +231,7 @@ public partial class ProjectManagementDbContext : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.ProjectMembers)
                 .HasForeignKey(d => d.UserId)
+                .HasPrincipalKey(u => u.Id) // 👈 thêm dòng này
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__ProjectMe__UserI__44FF419A");
         });
@@ -279,6 +285,7 @@ public partial class ProjectManagementDbContext : DbContext
 
             entity.HasOne(d => d.ChangedByUser).WithMany(p => p.TaskHistories)
                 .HasForeignKey(d => d.ChangedByUserId)
+                .HasPrincipalKey(u => u.Id) // 👈 thêm dòng này
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__TaskHisto__Chang__6D0D32F4");
 
@@ -307,28 +314,29 @@ public partial class ProjectManagementDbContext : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.TimeEntries)
                 .HasForeignKey(d => d.UserId)
+                .HasPrincipalKey(u => u.Id) // 👈 thêm dòng này
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__TimeEntri__UserI__68487DD7");
         });
 
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCAC66835DB4");
+        //modelBuilder.Entity<User>(entity =>
+        //{
+        //    entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCAC66835DB4");
 
-            entity.HasIndex(e => e.Email, "UQ__Users__A9D10534EC1CA12B").IsUnique();
+        //    entity.HasIndex(e => e.Email, "UQ__Users__A9D10534EC1CA12B").IsUnique();
 
-            entity.Property(e => e.UserId).HasColumnName("UserID");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.Email).HasMaxLength(255);
-            entity.Property(e => e.FullName).HasMaxLength(255);
-            entity.Property(e => e.PasswordHash).HasMaxLength(255);
-            entity.Property(e => e.Role)
-                .HasMaxLength(50)
-                .HasDefaultValue("Member");
-            entity.Property(e => e.Username).HasMaxLength(100);
-        });
+        //    entity.Property(e => e.UserId).HasColumnName("UserID");
+        //    entity.Property(e => e.CreatedAt)
+        //        .HasDefaultValueSql("(getdate())")
+        //        .HasColumnType("datetime");
+        //    entity.Property(e => e.Email).HasMaxLength(255);
+        //    entity.Property(e => e.FullName).HasMaxLength(255);
+        //    entity.Property(e => e.PasswordHash).HasMaxLength(255);
+        //    entity.Property(e => e.Role)
+        //        .HasMaxLength(50)
+        //        .HasDefaultValue("Member");
+        //    entity.Property(e => e.Username).HasMaxLength(100);
+        //});
 
         OnModelCreatingPartial(modelBuilder);
     }

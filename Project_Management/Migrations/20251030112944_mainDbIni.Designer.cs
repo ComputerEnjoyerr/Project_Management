@@ -12,8 +12,8 @@ using Project_Management.Data;
 namespace Project_Management.Migrations
 {
     [DbContext(typeof(ProjectManagementDbContext))]
-    [Migration("20251027140602_mainDb")]
-    partial class mainDb
+    [Migration("20251030112944_mainDbIni")]
+    partial class mainDbIni
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,58 @@ namespace Project_Management.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Project_Management.Models.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApplicationUser");
+                });
 
             modelBuilder.Entity("Project_Management.Models.ChatRoom", b =>
                 {
@@ -76,8 +128,8 @@ namespace Project_Management.Migrations
                         .HasColumnType("int")
                         .HasColumnName("TaskID");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("UserID");
 
                     b.HasKey("CommentId")
@@ -106,8 +158,8 @@ namespace Project_Management.Migrations
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SenderId")
-                        .HasColumnType("int")
+                    b.Property<string>("SenderId")
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("SenderID");
 
                     b.Property<DateTime?>("SentAt")
@@ -188,8 +240,8 @@ namespace Project_Management.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("UserID");
 
                     b.HasKey("NotificationId")
@@ -209,14 +261,14 @@ namespace Project_Management.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ObjectiveId"));
 
-                    b.Property<int?>("AssignedTo")
-                        .HasColumnType("int");
+                    b.Property<string>("AssignedTo")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("datetime");
 
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("int");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -289,8 +341,8 @@ namespace Project_Management.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("int");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -350,8 +402,8 @@ namespace Project_Management.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasDefaultValue("Member");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("UserID");
 
                     b.HasKey("ProjectMemberId")
@@ -457,8 +509,8 @@ namespace Project_Management.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
-                    b.Property<int>("ChangedByUserId")
-                        .HasColumnType("int")
+                    b.Property<string>("ChangedByUserId")
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("ChangedByUserID");
 
                     b.Property<string>("NewStatus")
@@ -514,8 +566,8 @@ namespace Project_Management.Migrations
                         .HasColumnType("int")
                         .HasColumnName("TaskID");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("UserID");
 
                     b.HasKey("TimeEntryId")
@@ -526,54 +578,6 @@ namespace Project_Management.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("TimeEntries");
-                });
-
-            modelBuilder.Entity("Project_Management.Models.User", b =>
-                {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("UserID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("FullName")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Role")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("Member");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("UserId")
-                        .HasName("PK__Users__1788CCAC66835DB4");
-
-                    b.HasIndex(new[] { "Email" }, "UQ__Users__A9D10534EC1CA12B")
-                        .IsUnique();
-
-                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Project_Management.Models.ChatRoom", b =>
@@ -595,10 +599,9 @@ namespace Project_Management.Migrations
                         .IsRequired()
                         .HasConstraintName("FK__Comments__TaskID__5AEE82B9");
 
-                    b.HasOne("Project_Management.Models.User", "User")
+                    b.HasOne("Project_Management.Models.ApplicationUser", "User")
                         .WithMany("Comments")
                         .HasForeignKey("UserId")
-                        .IsRequired()
                         .HasConstraintName("FK__Comments__UserID__5BE2A6F2");
 
                     b.Navigation("Task");
@@ -614,10 +617,9 @@ namespace Project_Management.Migrations
                         .IsRequired()
                         .HasConstraintName("FK__Messages__ChatRo__6383C8BA");
 
-                    b.HasOne("Project_Management.Models.User", "Sender")
+                    b.HasOne("Project_Management.Models.ApplicationUser", "Sender")
                         .WithMany("Messages")
                         .HasForeignKey("SenderId")
-                        .IsRequired()
                         .HasConstraintName("FK__Messages__Sender__6477ECF3");
 
                     b.Navigation("ChatRoom");
@@ -638,10 +640,9 @@ namespace Project_Management.Migrations
 
             modelBuilder.Entity("Project_Management.Models.Notification", b =>
                 {
-                    b.HasOne("Project_Management.Models.User", "User")
+                    b.HasOne("Project_Management.Models.ApplicationUser", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
-                        .IsRequired()
                         .HasConstraintName("FK__Notificat__UserI__71D1E811");
 
                     b.Navigation("User");
@@ -649,15 +650,14 @@ namespace Project_Management.Migrations
 
             modelBuilder.Entity("Project_Management.Models.Objective", b =>
                 {
-                    b.HasOne("Project_Management.Models.User", "AssignedToNavigation")
+                    b.HasOne("Project_Management.Models.ApplicationUser", "AssignedToNavigation")
                         .WithMany("ObjectiveAssignedToNavigations")
                         .HasForeignKey("AssignedTo")
                         .HasConstraintName("FK__Objective__Assig__5629CD9C");
 
-                    b.HasOne("Project_Management.Models.User", "CreatedByNavigation")
+                    b.HasOne("Project_Management.Models.ApplicationUser", "CreatedByNavigation")
                         .WithMany("ObjectiveCreatedByNavigations")
                         .HasForeignKey("CreatedBy")
-                        .IsRequired()
                         .HasConstraintName("FK__Objective__Creat__571DF1D5");
 
                     b.HasOne("Project_Management.Models.Milestone", "Milestone")
@@ -689,10 +689,9 @@ namespace Project_Management.Migrations
 
             modelBuilder.Entity("Project_Management.Models.Project", b =>
                 {
-                    b.HasOne("Project_Management.Models.User", "CreatedByNavigation")
+                    b.HasOne("Project_Management.Models.ApplicationUser", "CreatedByNavigation")
                         .WithMany("Projects")
                         .HasForeignKey("CreatedBy")
-                        .IsRequired()
                         .HasConstraintName("FK__Projects__Create__3F466844");
 
                     b.Navigation("CreatedByNavigation");
@@ -706,10 +705,9 @@ namespace Project_Management.Migrations
                         .IsRequired()
                         .HasConstraintName("FK__ProjectMe__Proje__440B1D61");
 
-                    b.HasOne("Project_Management.Models.User", "User")
+                    b.HasOne("Project_Management.Models.ApplicationUser", "User")
                         .WithMany("ProjectMembers")
                         .HasForeignKey("UserId")
-                        .IsRequired()
                         .HasConstraintName("FK__ProjectMe__UserI__44FF419A");
 
                     b.Navigation("Project");
@@ -741,10 +739,9 @@ namespace Project_Management.Migrations
 
             modelBuilder.Entity("Project_Management.Models.TaskHistory", b =>
                 {
-                    b.HasOne("Project_Management.Models.User", "ChangedByUser")
+                    b.HasOne("Project_Management.Models.ApplicationUser", "ChangedByUser")
                         .WithMany("TaskHistories")
                         .HasForeignKey("ChangedByUserId")
-                        .IsRequired()
                         .HasConstraintName("FK__TaskHisto__Chang__6D0D32F4");
 
                     b.HasOne("Project_Management.Models.Objective", "Task")
@@ -766,15 +763,35 @@ namespace Project_Management.Migrations
                         .IsRequired()
                         .HasConstraintName("FK__TimeEntri__TaskI__6754599E");
 
-                    b.HasOne("Project_Management.Models.User", "User")
+                    b.HasOne("Project_Management.Models.ApplicationUser", "User")
                         .WithMany("TimeEntries")
                         .HasForeignKey("UserId")
-                        .IsRequired()
                         .HasConstraintName("FK__TimeEntri__UserI__68487DD7");
 
                     b.Navigation("Task");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Project_Management.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Messages");
+
+                    b.Navigation("Notifications");
+
+                    b.Navigation("ObjectiveAssignedToNavigations");
+
+                    b.Navigation("ObjectiveCreatedByNavigations");
+
+                    b.Navigation("ProjectMembers");
+
+                    b.Navigation("Projects");
+
+                    b.Navigation("TaskHistories");
+
+                    b.Navigation("TimeEntries");
                 });
 
             modelBuilder.Entity("Project_Management.Models.ChatRoom", b =>
@@ -814,27 +831,6 @@ namespace Project_Management.Migrations
             modelBuilder.Entity("Project_Management.Models.Sprint", b =>
                 {
                     b.Navigation("Objectives");
-                });
-
-            modelBuilder.Entity("Project_Management.Models.User", b =>
-                {
-                    b.Navigation("Comments");
-
-                    b.Navigation("Messages");
-
-                    b.Navigation("Notifications");
-
-                    b.Navigation("ObjectiveAssignedToNavigations");
-
-                    b.Navigation("ObjectiveCreatedByNavigations");
-
-                    b.Navigation("ProjectMembers");
-
-                    b.Navigation("Projects");
-
-                    b.Navigation("TaskHistories");
-
-                    b.Navigation("TimeEntries");
                 });
 #pragma warning restore 612, 618
         }

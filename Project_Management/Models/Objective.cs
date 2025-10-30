@@ -21,9 +21,9 @@ public partial class Objective
 
     public string? Status { get; set; }
 
-    public int? AssignedTo { get; set; }
+    public string? AssignedTo { get; set; }
 
-    public int CreatedBy { get; set; }
+    public string? CreatedBy { get; set; }
 
     public DateOnly? StartDate { get; set; }
 
@@ -31,11 +31,11 @@ public partial class Objective
 
     public DateTime? CompletedAt { get; set; }
 
-    public virtual User? AssignedToNavigation { get; set; }
+    public virtual ApplicationUser? AssignedToNavigation { get; set; }
 
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
-    public virtual User CreatedByNavigation { get; set; } = null!;
+    public virtual ApplicationUser CreatedByNavigation { get; set; } = null!;
 
     public virtual Milestone? Milestone { get; set; }
 

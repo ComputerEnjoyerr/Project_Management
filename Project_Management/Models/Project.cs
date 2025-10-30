@@ -21,13 +21,13 @@ public partial class Project
 
     public DateTime? CompletedAt { get; set; }
 
-    public int CreatedBy { get; set; }
+    public string? CreatedBy { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 
     public virtual ICollection<ChatRoom> ChatRooms { get; set; } = new List<ChatRoom>();
 
-    public virtual User CreatedByNavigation { get; set; } = null!;
+    public virtual ApplicationUser CreatedByNavigation { get; set; } = null!;
 
     public virtual ICollection<Milestone> Milestones { get; set; } = new List<Milestone>();
 

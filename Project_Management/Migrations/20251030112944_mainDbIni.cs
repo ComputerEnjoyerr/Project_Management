@@ -6,27 +6,34 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Project_Management.Migrations
 {
     /// <inheritdoc />
-    public partial class mainDb : Migration
+    public partial class mainDbIni : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "ApplicationUser",
                 columns: table => new
                 {
-                    UserID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Username = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Role = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true, defaultValue: "Member"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Users__1788CCAC66835DB4", x => x.UserID);
+                    table.PrimaryKey("PK_ApplicationUser", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -35,7 +42,7 @@ namespace Project_Management.Migrations
                 {
                     NotificationID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserID = table.Column<int>(type: "int", nullable: false),
+                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsRead = table.Column<bool>(type: "bit", nullable: true, defaultValue: false),
@@ -47,8 +54,8 @@ namespace Project_Management.Migrations
                     table.ForeignKey(
                         name: "FK__Notificat__UserI__71D1E811",
                         column: x => x.UserID,
-                        principalTable: "Users",
-                        principalColumn: "UserID");
+                        principalTable: "ApplicationUser",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -64,7 +71,7 @@ namespace Project_Management.Migrations
                     StartDate = table.Column<DateOnly>(type: "date", nullable: true),
                     EndDate = table.Column<DateOnly>(type: "date", nullable: true),
                     CompletedAt = table.Column<DateTime>(type: "datetime", nullable: true),
-                    CreatedBy = table.Column<int>(type: "int", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
                 },
                 constraints: table =>
@@ -73,8 +80,8 @@ namespace Project_Management.Migrations
                     table.ForeignKey(
                         name: "FK__Projects__Create__3F466844",
                         column: x => x.CreatedBy,
-                        principalTable: "Users",
-                        principalColumn: "UserID");
+                        principalTable: "ApplicationUser",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -127,7 +134,7 @@ namespace Project_Management.Migrations
                     ProjectMemberID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProjectID = table.Column<int>(type: "int", nullable: false),
-                    UserID = table.Column<int>(type: "int", nullable: false),
+                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Role = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true, defaultValue: "Member"),
                     JoinedAt = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
                 },
@@ -142,8 +149,8 @@ namespace Project_Management.Migrations
                     table.ForeignKey(
                         name: "FK__ProjectMe__UserI__44FF419A",
                         column: x => x.UserID,
-                        principalTable: "Users",
-                        principalColumn: "UserID");
+                        principalTable: "ApplicationUser",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -199,7 +206,7 @@ namespace Project_Management.Migrations
                     MessageID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ChatRoomID = table.Column<int>(type: "int", nullable: false),
-                    SenderID = table.Column<int>(type: "int", nullable: false),
+                    SenderID = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SentAt = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
                 },
@@ -214,8 +221,8 @@ namespace Project_Management.Migrations
                     table.ForeignKey(
                         name: "FK__Messages__Sender__6477ECF3",
                         column: x => x.SenderID,
-                        principalTable: "Users",
-                        principalColumn: "UserID");
+                        principalTable: "ApplicationUser",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -231,8 +238,8 @@ namespace Project_Management.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Priority = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true, defaultValue: "Normal"),
                     Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true, defaultValue: "Todo"),
-                    AssignedTo = table.Column<int>(type: "int", nullable: true),
-                    CreatedBy = table.Column<int>(type: "int", nullable: false),
+                    AssignedTo = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     StartDate = table.Column<DateOnly>(type: "date", nullable: true),
                     DueDate = table.Column<DateOnly>(type: "date", nullable: true),
                     CompletedAt = table.Column<DateTime>(type: "datetime", nullable: true)
@@ -243,13 +250,13 @@ namespace Project_Management.Migrations
                     table.ForeignKey(
                         name: "FK__Objective__Assig__5629CD9C",
                         column: x => x.AssignedTo,
-                        principalTable: "Users",
-                        principalColumn: "UserID");
+                        principalTable: "ApplicationUser",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK__Objective__Creat__571DF1D5",
                         column: x => x.CreatedBy,
-                        principalTable: "Users",
-                        principalColumn: "UserID");
+                        principalTable: "ApplicationUser",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK__Objective__Miles__5535A963",
                         column: x => x.MilestoneID,
@@ -274,7 +281,7 @@ namespace Project_Management.Migrations
                     CommentID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TaskID = table.Column<int>(type: "int", nullable: false),
-                    UserID = table.Column<int>(type: "int", nullable: false),
+                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
                 },
@@ -289,8 +296,8 @@ namespace Project_Management.Migrations
                     table.ForeignKey(
                         name: "FK__Comments__UserID__5BE2A6F2",
                         column: x => x.UserID,
-                        principalTable: "Users",
-                        principalColumn: "UserID");
+                        principalTable: "ApplicationUser",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -300,7 +307,7 @@ namespace Project_Management.Migrations
                     HistoryID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TaskID = table.Column<int>(type: "int", nullable: false),
-                    ChangedByUserID = table.Column<int>(type: "int", nullable: false),
+                    ChangedByUserID = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     ChangeDate = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
                     OldStatus = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     NewStatus = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
@@ -312,8 +319,8 @@ namespace Project_Management.Migrations
                     table.ForeignKey(
                         name: "FK__TaskHisto__Chang__6D0D32F4",
                         column: x => x.ChangedByUserID,
-                        principalTable: "Users",
-                        principalColumn: "UserID");
+                        principalTable: "ApplicationUser",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK__TaskHisto__TaskI__6C190EBB",
                         column: x => x.TaskID,
@@ -328,7 +335,7 @@ namespace Project_Management.Migrations
                     TimeEntryID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TaskID = table.Column<int>(type: "int", nullable: false),
-                    UserID = table.Column<int>(type: "int", nullable: false),
+                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     StartTime = table.Column<DateTime>(type: "datetime", nullable: true),
                     EndTime = table.Column<DateTime>(type: "datetime", nullable: true),
                     Duration = table.Column<int>(type: "int", nullable: true, computedColumnSql: "(datediff(minute,[StartTime],[EndTime]))", stored: false),
@@ -345,8 +352,8 @@ namespace Project_Management.Migrations
                     table.ForeignKey(
                         name: "FK__TimeEntri__UserI__68487DD7",
                         column: x => x.UserID,
-                        principalTable: "Users",
-                        principalColumn: "UserID");
+                        principalTable: "ApplicationUser",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -453,12 +460,6 @@ namespace Project_Management.Migrations
                 name: "IX_TimeEntries_UserID",
                 table: "TimeEntries",
                 column: "UserID");
-
-            migrationBuilder.CreateIndex(
-                name: "UQ__Users__A9D10534EC1CA12B",
-                table: "Users",
-                column: "Email",
-                unique: true);
         }
 
         /// <inheritdoc />
@@ -501,7 +502,7 @@ namespace Project_Management.Migrations
                 name: "Projects");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "ApplicationUser");
         }
     }
 }

@@ -148,8 +148,9 @@
                 <div class="mt-auto small text-muted">
                     <div>Signed in as <strong>@User.Identity?.Name</strong></div>
                     <div class="mt-2">
-                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary btn-sm">Đăng Nhập</a>
-                        <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-danger btn-sm">Đăng xuất</a>
+                        @* <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary btn-sm">Đăng Nhập</a>
+                        <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-danger btn-sm">Đăng xuất</a> *@
+                        <partial name="_LoginPartial" />
                     </div>
                 </div>
             </nav>
