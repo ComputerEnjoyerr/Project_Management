@@ -9,7 +9,7 @@ public partial class TimeEntry
 
     public int TaskId { get; set; }
 
-    public int UserId { get; set; }
+    public string? UserId { get; set; }
 
     public DateTime? StartTime { get; set; }
 
@@ -21,5 +21,5 @@ public partial class TimeEntry
 
     public virtual Objective Task { get; set; } = null!;
 
-    public virtual User User { get; set; } = null!;
+    public virtual ApplicationUser User { get; set; } = null!;
 }

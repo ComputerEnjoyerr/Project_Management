@@ -9,7 +9,7 @@ public partial class TaskHistory
 
     public int TaskId { get; set; }
 
-    public int ChangedByUserId { get; set; }
+    public string? ChangedByUserId { get; set; }
 
     public DateTime? ChangeDate { get; set; }
 
@@ -19,7 +19,7 @@ public partial class TaskHistory
 
     public string? Note { get; set; }
 
-    public virtual User ChangedByUser { get; set; } = null!;
+    public virtual ApplicationUser ChangedByUser { get; set; } = null!;
 
     public virtual Objective Task { get; set; } = null!;
 }
