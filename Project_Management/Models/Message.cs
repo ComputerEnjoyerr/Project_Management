@@ -9,7 +9,7 @@ public partial class Message
 
     public int ChatRoomId { get; set; }
 
-    public string? SenderId { get; set; }
+    public string? SenderEmail { get; set; }
 
     public string? Content { get; set; }
 
@@ -17,5 +17,5 @@ public partial class Message
 
     public virtual ChatRoom ChatRoom { get; set; } = null!;
 
-    public virtual ApplicationUser Sender { get; set; } = null!;
+    //public virtual ApplicationUser Sender { get; set; } = null!;
 }

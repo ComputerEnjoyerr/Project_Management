@@ -9,7 +9,7 @@ public partial class ProjectMember
 
     public int ProjectId { get; set; }
 
-    public string? UserId { get; set; }
+    public string? UserEmail { get; set; }
 
     public string? Role { get; set; }
 
@@ -17,5 +17,5 @@ public partial class ProjectMember
 
     public virtual Project Project { get; set; } = null!;
 
-    public virtual ApplicationUser User { get; set; } = null!;
+    //public virtual ApplicationUser User { get; set; } = null!;
 }

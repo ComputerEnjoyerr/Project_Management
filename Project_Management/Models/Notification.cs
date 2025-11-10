@@ -7,7 +7,7 @@ public partial class Notification
 {
     public int NotificationId { get; set; }
 
-    public string? UserId { get; set; }
+    public string? UserEmail { get; set; }
 
     public string? Type { get; set; }
 
@@ -17,5 +17,5 @@ public partial class Notification
 
     public DateTime? CreatedAt { get; set; }
 
-    public virtual ApplicationUser User { get; set; } = null!;
+    //public virtual ApplicationUser User { get; set; } = null!;
 }
