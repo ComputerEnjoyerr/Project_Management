@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Project_Management.Data;
 using Project_Management.Models;
+using Project_Management.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,14 +14,20 @@ builder.Services.AddDbContext<ProjectManagementDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-
+// Thêm identity vào dự án
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders()
     .AddDefaultUI();
 builder.Services.AddControllersWithViews();
 
+// Inject các serivce
+builder.Services.AddScoped<IProjectService ,ProjectService>();
+builder.Services.AddScoped<IUserService ,UserService>();
+
 var app = builder.Build();
+
+// Tạo admin mặc định lúc chạy lần đậu tiên
 using (var scope = app.Services.CreateScope())
 {
     var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();

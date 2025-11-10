@@ -2,6 +2,7 @@
     ViewBag.Title = "Trang chủ";
     Layout = "~/Views/Shared/_Home.cshtml";
 }
+@model List<Project_Management.Models.Project>
 
 <!-- Top bar -->
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -73,52 +74,70 @@
 
 <!-- Projects list and Kanban preview -->
 <div class="row">
-    <div class="col-lg-5 mb-4">
+    <div class="col-lg-12 mb-4">
         <div class="card p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h5>Danh sách dự án</h5>
                 <small class="text-muted">Sắp xếp: Mới nhất</small>
             </div>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>Website bán hàng</strong>
-                        <div class="small text-muted">PM: Trần B | Agile | 12 tasks</div>
-                    </div>
-                    <div class="text-end">
-                        <div>75% <small class="text-muted">complete</small></div>
-                        <div class="mt-2"><button class="btn btn-sm btn-outline-primary btn-sm" onclick="openProject(1)">Mở</button></div>
-                    </div>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>Ứng dụng nội bộ</strong>
-                        <div class="small text-muted">PM: Nguyễn A | Scrum | 8 tasks</div>
-                    </div>
-                    <div class="text-end">
-                        <div>40% <small class="text-muted">complete</small></div>
-                        <div class="mt-2"><button class="btn btn-sm btn-outline-primary" onclick="openProject(2)">Mở</button></div>
-                    </div>
-                </li>
-            </ul>
-        </div>
+                @if (Model != null && Model.Count > 0)
+                {
+                    @foreach (var project in Model)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <!-- Cột thông tin -->
+                            <div>
+                                <strong>@project.Name</strong><br />
+                                <small class="text-muted">
+                                    PM: @project.CreatedByEmail |
+                                    @project.Methodology |
+                                    @project.Objectives.Count tasks
+                                </small>
+                            </div>
 
-        <div class="card p-3 mt-3">
-            <h6>Lịch (deadlines)</h6>
-            <div class="small text-muted">20 Oct - 27 Oct: 4 deadlines</div>
-            <div class="mt-3">
-                <div class="d-flex align-items-center mb-2">
-                    <div class="me-2 avatar">TB</div>
-                    <div>
-                        <div><strong>Fix bug payment</strong></div>
-                        <div class="small text-muted">Due: 2025-10-28</div>
-                    </div>
-                </div>
-            </div>
+                            <!-- Cột trạng thái + hành động -->
+                            <div class="text-end">
+                                <div><small class="text-muted">@project.Status</small></div>
+                                <div class="mt-2 d-flex gap-1 justify-content-end">
+                                    <!-- Mở -->
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       asp-controller="Project"
+                                       asp-action="Detail"
+                                       asp-route-id="@project.ProjectId">Mở</a>
+
+                                    <!-- Sửa -->
+                                    <a class="btn btn-sm btn-outline-warning"
+                                       asp-controller="Project"
+                                       asp-action="Update"
+                                       asp-route-id="@project.ProjectId">Sửa</a>
+
+                                    <!-- Xóa -->
+                                    <form asp-controller="Project"
+                                          asp-action="Delete"
+                                          asp-route-id="@project.ProjectId"
+                                          method="post"
+                                          onsubmit="return confirm('Bạn có chắc muốn xóa dự án này không?');"
+                                          class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                }
+                else
+                {
+                    <li class="list-group-item">
+                        <strong>Chưa có dự án nào</strong>
+                    </li>
+                }
+            </ul>
+
         </div>
     </div>
 
-    <div class="col-lg-7">
+    <div class="col-lg-12">
         <div class="card p-3">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5>Preview Kanban - Project: Website bán hàng</h5>
@@ -235,32 +254,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="createProjectForm">
-                    <div class="mb-3">
-                        <label class="form-label">Tên dự án</label>
-                        <input class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mô tả</label>
-<textarea class="form-control" rows="3"></textarea>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3"><label class="form-label">Start Date</label><input type="date" class="form-control"></div>
-                        <div class="col-md-6 mb-3"><label class="form-label">End Date</label><input type="date" class="form-control"></div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Methodology</label>
-                        <select class="form-select"><option>Agile</option><option>Scrum</option><option>Kanban</option><option>Waterfall</option></select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Gán quản lý</label>
-                        <select class="form-select"><option>Trần B</option><option>Nguyễn A</option></select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
-                <button class="btn btn-primary" onclick="submitProject()">Tạo</button>
+                @await Html.PartialAsync("_CreateProjectPartial", new Project_Management.Models.Project())
             </div>
         </div>
     </div>
