@@ -1,0 +1,130 @@
+﻿
+@model KanbanViewModel
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5>Kanban Preview - @Model.Project.Name</h5>
+    <div>
+        <a href="@Url.Action("Index", "Kanban", new { projectId = Model.Project.ProjectId })"
+           class="btn btn-sm btn-outline-primary">
+            <i class="fa fa-expand"></i> Mở toàn màn hình
+        </a>
+    </div>
+</div>
+
+@if (Model.Stages != null && Model.Stages.Any())
+{
+    <div class="row g-2">
+        @foreach (var stage in Model.Stages.Take(4)) // Chỉ hiển thị 4 cột đầu tiên
+        {
+            var stageTasks = Model.Objectives.Where(o => o.Status == stage.Name).ToList();
+            <div class="col-3">
+                <div class="kanban-column-preview border rounded p-2 bg-light">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong class="small">@stage.Name</strong>
+                        <span class="badge bg-secondary rounded-pill">@stageTasks.Count</span>
+                    </div>
+
+                    <div class="tasks-container-preview" style="min-height: 120px;">
+                        @foreach (var task in stageTasks.Take(3)) // Chỉ hiển thị 3 task đầu tiên
+                        {
+                            <div class="card-task-preview p-2 mb-2 bg-white shadow-sm rounded small">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="task-title-preview" style="font-size: 0.8rem;">
+                                        @task.Title
+                                    </div>
+                                    <span class="badge @GetPriorityBadgeClass(task.Priority)" style="font-size: 0.6rem;">
+                                        @GetPriorityText(task.Priority)
+                                    </span>
+                                </div>
+                                @if (!string.IsNullOrEmpty(task.AssignedToEmail))
+                                {
+                                    <div class="text-muted" style="font-size: 0.7rem;">
+                                        <i class="fa fa-user"></i> @task.AssignedToEmail
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        @if (stageTasks.Count > 3)
+                        {
+                            <div class="text-center text-muted small">
+                                + @(stageTasks.Count - 3) task khác
+                            </div>
+                        }
+
+                        @if (stageTasks.Count == 0)
+                        {
+                            <div class="text-center text-muted small py-2">
+                                <i class="fa fa-inbox"></i><br>
+                                Trống
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center text-muted py-3">
+        <i class="fa fa-columns fa-2x mb-2"></i>
+        <p>Chưa có stages nào được tạo</p>
+        <a href="@Url.Action("Index", "Kanban", new { projectId = Model.Project.ProjectId })" class="btn btn-sm btn-primary">
+            Tạo stages
+        </a>
+    </div>
+}
+
+<style>
+    .kanban-column-preview {
+        min-height: 200px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .card-task-preview {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-left: 3px solid #007bff;
+    }
+
+        .card-task-preview:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+    .task-title-preview {
+        line-height: 1.2;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+
+@functions {
+    public string GetPriorityBadgeClass(string priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "high" => "bg-warning",
+            "medium" => "bg-info",
+            "low" => "bg-success",
+            "critical" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    public string GetPriorityText(string priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "high" => "Cao",
+            "medium" => "TB",
+            "low" => "Thấp",
+            "critical" => "Khẩn",
+            _ => priority
+        };
+    }
+}

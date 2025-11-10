@@ -27,7 +27,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="text-muted small">Dự án</div>
-                    <h4>6</h4>
+                    <h4>@Model.Count</h4>
                 </div>
                 <div><i class="fa fa-folder fa-2x text-primary"></i></div>
             </div>
@@ -102,19 +102,17 @@
                                 <div class="mt-2 d-flex gap-1 justify-content-end">
                                     <!-- Mở -->
                                     <a class="btn btn-sm btn-outline-primary"
-                                       asp-controller="Project"
+
                                        asp-action="Detail"
                                        asp-route-id="@project.ProjectId">Mở</a>
 
                                     <!-- Sửa -->
                                     <a class="btn btn-sm btn-outline-warning"
-                                       asp-controller="Project"
                                        asp-action="Update"
                                        asp-route-id="@project.ProjectId">Sửa</a>
 
                                     <!-- Xóa -->
-                                    <form asp-controller="Project"
-                                          asp-action="Delete"
+                                    <form asp-action="Delete"
                                           asp-route-id="@project.ProjectId"
                                           method="post"
                                           onsubmit="return confirm('Bạn có chắc muốn xóa dự án này không?');"
@@ -249,9 +247,9 @@
 <div class="modal fade" id="createProjectModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-success text-white">
                 <h5 class="modal-title">Tạo dự án mới</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 @await Html.PartialAsync("_CreateProjectPartial", new Project_Management.Models.Project())

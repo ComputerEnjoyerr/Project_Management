@@ -1,0 +1,48 @@
+﻿@model Project_Management.Models.Project
+
+<div class="modal fade" id="addMemberModal" tabindex="-1" aria-labelledby="addMemberModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-success text-white rounded-top-4">
+                <h5 class="modal-title" id="addMemberModalLabel">
+                    <i class="bi bi-person-plus me-2"></i>Thêm thành viên mới
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form asp-action="Add" method="post">
+                <div class="modal-body p-4">
+                    <input type="hidden" name="projectId" value="@Model.ProjectId" />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nhân viên</label>
+                        <select name="userId" class="form-select" required>
+                            <option value="">-- Chọn nhân viên --</option>
+                            @if (ViewBag.Members != null)
+                            {
+                                foreach (var user in ViewBag.Members)
+                                {
+                                    <option value="@user.Email">@user.Email</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="">Không có nhân viên khả dụng</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Vai trò trong dự án</label>
+                        <input type="text" name="role" class="form-control" placeholder="VD: Developer, Tester, PM..." required />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success"><i class="bi bi-save me-1"></i>Thêm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

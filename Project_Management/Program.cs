@@ -24,6 +24,9 @@ builder.Services.AddControllersWithViews();
 // Inject các serivce
 builder.Services.AddScoped<IProjectService ,ProjectService>();
 builder.Services.AddScoped<IUserService ,UserService>();
+builder.Services.AddScoped<IProjectMemberService, ProjectMemberService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IKanbanService, KanbanService>();
 
 var app = builder.Build();
 

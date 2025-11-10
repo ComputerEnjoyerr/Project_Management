@@ -1,0 +1,125 @@
+﻿@model Project_Management.Models.Project
+
+@{
+    ViewData["Title"] = "Project Detail";
+    Layout = "~/Views/Shared/_Home.cshtml";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-folder2-open me-2"></i>Chi tiết dự án</h3>
+            <div>
+                @* <a class="btn btn-sm btn-light" asp-controller="Kanban" asp-action="Index" asp-route-projectId="@Model?.ProjectId"><i class="bi bi-arrow-left"></i> Kanban</a> *@
+                @* <a class="btn btn-sm btn-light" asp-controller="Kanban" asp-action="Index" asp-route-projectId="@Model?.ProjectId"><i class="bi bi-arrow-left"></i> Kanban</a> *@
+                <a class="btn btn-sm btn-light" asp-controller="ProjectMembers" asp-action="Index" asp-route-projectId="@Model?.ProjectId"><i class="bi bi-arrow-left"></i> Thành viên</a>
+                <a class="btn btn-sm btn-light me-2" asp-action="Update" asp-route-id="@Model?.ProjectId"><i class="bi bi-pencil"></i> Chỉnh sửa</a>
+                <a class="btn btn-sm btn-outline-light" asp-action="Index"><i class="bi bi-arrow-left"></i> Quay lại</a>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h5 class="fw-bold text-secondary">Thông tin dự án</h5>
+                    <ul class="list-group list-group-flush">
+                       @if (Model != null)
+                       {
+                            <li class="list-group-item"><strong>Tên dự án:</strong> @Model.Name</li>
+                            <li class="list-group-item"><strong>Mô tả:</strong> @Model.Description</li>
+                            <li class="list-group-item"><strong>Phương pháp:</strong> @Model.Methodology</li>
+                            <li class="list-group-item"><strong>Trạng thái:</strong> @Model.Status</li>
+                            <li class="list-group-item"><strong>Ngày bắt đầu:</strong> @Model.StartDate?.ToString("dd/MM/yyyy")</li>
+                            <li class="list-group-item"><strong>Ngày kết thúc:</strong> @Model.EndDate?.ToString("dd/MM/yyyy")</li>
+                            <li class="list-group-item"><strong>Hoàn thành lúc:</strong> @Model.CompletedAt?.ToString("dd/MM/yyyy HH:mm")</li>
+                            <li class="list-group-item"><strong>Người tạo:</strong> @Model.CreatedByEmail</li>
+                            <li class="list-group-item"><strong>Ngày tạo:</strong> @Model.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</li>
+                       }
+                       else
+                       {
+                            <li class="list-group-item text-muted">Không có thông tin dự án.</li>
+                       }
+                    </ul>
+                </div>
+
+                <div class="col-md-6">
+                    <h5 class="fw-bold text-secondary mb-3">Tạo công việc mới</h5>
+                    <form asp-action="CreateTask" method="post" class="border rounded-3 p-3 bg-light">
+                        <input type="hidden" name="ProjectId" value="@Model.ProjectId" />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tên công việc</label>
+                            <input name="TaskName" class="form-control" placeholder="Nhập tên công việc..." required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mô tả</label>
+                            <textarea name="TaskDescription" class="form-control" rows="3" placeholder="Nhập mô tả công việc..."></textarea>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Ngày bắt đầu</label>
+                                <input type="date" name="StartDate" class="form-control" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Hạn hoàn thành</label>
+                                <input type="date" name="DueDate" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="mt-4 text-end">
+                            <button type="submit" class="btn btn-success"><i class="bi bi-plus-circle"></i> Tạo công việc</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="mt-5">
+                <h5 class="fw-bold text-secondary mb-3">Danh sách công việc</h5>
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tên công việc</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày bắt đầu</th>
+                            <th>Hạn hoàn thành</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Stages != null && Model.Stages.Any())
+                        {
+                            foreach (var stage in Model.Stages)
+                            {
+                                <tr>
+                                    <td>@stage.Name</td>
+                                    <td>@stage.Status</td>
+                                    <td>@stage.StartDate?.ToString("dd/MM/yyyy")</td>
+                                    <td>@stage.EndDate?.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <a asp-action="TaskDetail" asp-route-id="@stage.StageId" class="btn btn-sm btn-outline-info"><i class="bi bi-eye"></i></a>
+                                        <a asp-action="EditTask" asp-route-id="@stage.StageId" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></a>
+                                        <a asp-action="DeleteTask" asp-route-id="@stage.StageId" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xác nhận xóa công việc này?')"><i class="bi bi-trash"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Chưa có công việc nào cho dự án này</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
