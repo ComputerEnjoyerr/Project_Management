@@ -1,0 +1,73 @@
+﻿@model Project_Management.Models.Project
+@{
+    ViewBag.Title = "Chi tiết dự án";
+    Layout = "~/Views/Shared/_Home.cshtml";
+}
+
+<h3>@Model.Name</h3>
+
+<!-- ✅ Hiển thị thông báo nếu có -->
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fa fa-check-circle"></i> @TempData["Message"]
+        @if (TempData["CreatedAt"] != null)
+        {
+            <br />
+    
+            <small class="text-muted">Thời gian: @TempData["CreatedAt"]</small>
+        }
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<hr />
+
+<h4>Công việc</h4>
+
+<!-- ✅ Nút thêm công việc -->
+<a href="@Url.Action("Create", "Objective", new { projectId = Model.ProjectId })" class="btn btn-primary mb-3">
+    <i class="fa fa-plus"></i> Thêm công việc
+</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Tiêu đề</th>
+            <th>Mô tả</th>
+            <th>Ưu tiên</th>
+            <th>Giao cho</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Objectives != null && Model.Objectives.Any())
+        {
+            foreach (var obj in Model.Objectives)
+            {
+                <tr>
+                    <td>@obj.Title</td>
+                    <td>@obj.Description</td>
+                    <td>@obj.Priority</td>
+                    <td>@obj.AssignedToEmail</td>
+                    <td>
+                        <a href="@Url.Action("Edit", "Objective", new { id = obj.ObjectiveId })" class="btn btn-sm btn-warning">Sửa</a>
+                        <form asp-action="Delete" asp-controller="Objective" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@obj.ObjectiveId" />
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Xóa công việc này?');">
+                                Xóa
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-center text-muted">Chưa có công việc nào</td>
+            </tr>
+        }
+    </tbody>
+</table>

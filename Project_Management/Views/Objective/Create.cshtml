@@ -1,0 +1,39 @@
+﻿@model Project_Management.Models.Objective
+@{
+    ViewBag.Title = "Thêm công việc";
+    Layout = "~/Views/Shared/_Home.cshtml";
+}
+
+<h4>Thêm công việc mới</h4>
+<form asp-action="Create" method="post">
+    <!-- ✅ Gán projectId từ ViewBag -->
+    <input type="hidden" asp-for="ProjectId" value="@ViewBag.ProjectId" />
+
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Priority" class="form-label">Mức độ ưu tiên</label>
+        <select asp-for="Priority" class="form-select">
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="AssignedToEmail" class="form-label">Giao cho (email)</label>
+        <input asp-for="AssignedToEmail" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu</button>
+    <a href="@Url.Action("Details", "Project", new { id = ViewBag.ProjectId })" class="btn btn-secondary">Hủy</a>
+</form>
