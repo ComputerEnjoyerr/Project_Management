@@ -17,9 +17,9 @@ public partial class Objective
 
     public string? Description { get; set; }
 
-    public string? Priority { get; set; }
+    public string Priority { get; set; } = "Normal";
 
-    public string? Status { get; set; }
+    public string Status { get; set; } = "Todo";
 
     public string? AssignedToEmail { get; set; }
 

@@ -27,6 +27,7 @@ builder.Services.AddScoped<IUserService ,UserService>();
 builder.Services.AddScoped<IProjectMemberService, ProjectMemberService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IKanbanService, KanbanService>();
+builder.Services.AddScoped<IMyTaskService, MyTaskService>();
 
 var app = builder.Build();
 

@@ -11,7 +11,7 @@
             <h3 class="mb-0"><i class="bi bi-folder2-open me-2"></i>Chi tiết dự án</h3>
             <div>
                 @* <a class="btn btn-sm btn-light" asp-controller="Kanban" asp-action="Index" asp-route-projectId="@Model?.ProjectId"><i class="bi bi-arrow-left"></i> Kanban</a> *@
-                @* <a class="btn btn-sm btn-light" asp-controller="Kanban" asp-action="Index" asp-route-projectId="@Model?.ProjectId"><i class="bi bi-arrow-left"></i> Kanban</a> *@
+                <a class="btn btn-sm btn-light" asp-controller="MyTasks" asp-action="Index" asp-route-projectId="@Model?.ProjectId"><i class="bi bi-arrow-left"></i> Công việc của tôi</a>
                 <a class="btn btn-sm btn-light" asp-controller="ProjectMembers" asp-action="Index" asp-route-projectId="@Model?.ProjectId"><i class="bi bi-arrow-left"></i> Thành viên</a>
                 <a class="btn btn-sm btn-light me-2" asp-action="Update" asp-route-id="@Model?.ProjectId"><i class="bi bi-pencil"></i> Chỉnh sửa</a>
                 <a class="btn btn-sm btn-outline-light" asp-action="Index"><i class="bi bi-arrow-left"></i> Quay lại</a>
