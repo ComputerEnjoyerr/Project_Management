@@ -1,0 +1,28 @@
+﻿@model Project_Management.Models.Objective
+@{
+    ViewBag.Title = "Xóa công việc";
+}
+
+<h3>Xác nhận xóa công việc</h3>
+<hr />
+
+<div class="alert alert-warning">
+    <p>Bạn có chắc muốn xóa công việc <strong>@Model.Title</strong> không?</p>
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Dự án</dt>
+    <dd class="col-sm-9">@Model.Project?.Name</dd>
+
+    <dt class="col-sm-3">Trạng thái</dt>
+    <dd class="col-sm-9">@Model.Status</dd>
+
+    <dt class="col-sm-3">Người được giao</dt>
+    <dd class="col-sm-9">@Model.AssignedToEmail</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="ObjectiveId" />
+    <button type="submit" onclick="return confirm('Bạn có muốn xóa?')" class="btn btn-danger">Xóa</button>
+    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>

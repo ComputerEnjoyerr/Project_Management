@@ -15,13 +15,20 @@ namespace Project_Management.Controllers
         private readonly IUserService userService;
         private readonly IKanbanService kanbanService;
         private readonly IDashboardService dashboardService;
-        public HomeController(ILogger<HomeController> logger, IProjectService projectService, IUserService userService, IKanbanService kanbanService, IDashboardService dashboardService)
+        private readonly IObjectiveService objectiveService;
+        public HomeController(ILogger<HomeController> logger,
+            IProjectService projectService, 
+            IUserService userService,
+            IKanbanService kanbanService, 
+            IDashboardService dashboardService,
+            IObjectiveService objectiveService)
         {
             _logger = logger;
             this.projectService = projectService;
             this.userService = userService;
             this.kanbanService = kanbanService;
             this.dashboardService = dashboardService;
+            this.objectiveService = objectiveService;
         }
 
         public IActionResult Index()
@@ -35,6 +42,7 @@ namespace Project_Management.Controllers
             ViewBag.Members = userService.GetUsers();
             ViewBag.CurrentUserEmail = userEmail;
             ViewBag.KanbanPreviews = dashboardService.GetDashboardData(userEmail);
+            ViewBag.TotalTasks = objectiveService.GetByAssignedEmail(userEmail);
             return View(userProjects);
         }
 
@@ -62,6 +70,7 @@ namespace Project_Management.Controllers
         {
             var project = projectService.GetById(id);
             ViewBag.Members = userService.GetUsers();
+            ViewBag.ProjectTasks = objectiveService.GetByProject(project);
             return View(project);
         }
 

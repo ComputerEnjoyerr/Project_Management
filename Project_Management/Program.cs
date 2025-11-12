@@ -28,7 +28,7 @@ builder.Services.AddScoped<IProjectMemberService, ProjectMemberService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IKanbanService, KanbanService>();
 builder.Services.AddScoped<IMyTaskService, MyTaskService>();
-
+builder.Services.AddScoped<IObjectiveService, ObjectiveService>();
 var app = builder.Build();
 
 // Tạo admin mặc định lúc chạy lần đậu tiên

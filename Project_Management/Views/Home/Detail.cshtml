@@ -44,7 +44,7 @@
 
                 <div class="col-md-6">
                     <h5 class="fw-bold text-secondary mb-3">Tạo công việc mới</h5>
-                    <form asp-action="CreateTask" method="post" class="border rounded-3 p-3 bg-light">
+                    <form asp-action="Create" asp-controller="Objective" method="post">
                         <input type="hidden" name="ProjectId" value="@Model.ProjectId" />
 
                         <div class="mb-3">
@@ -68,7 +68,7 @@
                             </div>
                         </div>
 
-                        <div class="mt-4 text-end">
+                        <div class="mt-4">
                             <button type="submit" class="btn btn-success"><i class="bi bi-plus-circle"></i> Tạo công việc</button>
                         </div>
                     </form>
@@ -77,6 +77,7 @@
 
             <div class="mt-5">
                 <h5 class="fw-bold text-secondary mb-3">Danh sách công việc</h5>
+                
                 <table class="table table-hover table-bordered align-middle">
                     <thead class="table-light">
                         <tr>
@@ -88,20 +89,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (Model.Stages != null && Model.Stages.Any())
+                        @if (Model.Objectives != null && Model.Objectives.Any())
                         {
-                            foreach (var stage in Model.Stages)
+                            foreach (var stage in Model.Objectives)
                             {
                                 <tr>
-                                    <td>@stage.Name</td>
+                                    <td>@stage.Title</td>
                                     <td>@stage.Status</td>
                                     <td>@stage.StartDate?.ToString("dd/MM/yyyy")</td>
-                                    <td>@stage.EndDate?.ToString("dd/MM/yyyy")</td>
-                                    <td>
-                                        <a asp-action="TaskDetail" asp-route-id="@stage.StageId" class="btn btn-sm btn-outline-info"><i class="bi bi-eye"></i></a>
-                                        <a asp-action="EditTask" asp-route-id="@stage.StageId" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></a>
-                                        <a asp-action="DeleteTask" asp-route-id="@stage.StageId" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xác nhận xóa công việc này?')"><i class="bi bi-trash"></i></a>
-                                    </td>
+                                    <td>@stage.DueDate?.ToString("dd/MM/yyyy")</td>
+                                    @* <td>
+                                        <a asp-action="TaskDetail" asp-route-id="@stage.ObjectiveId" class="btn btn-sm btn-outline-info"></a>
+                                        <a asp-action="EditTask" asp-route-id="@stage.ObjectiveId" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></a>
+                                        <a asp-action="DeleteTask" asp-route-id="@stage.ObjectiveId" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xác nhận xóa công việc này?')"><i class="bi bi-trash"></i></a>
+                                    </td> *@
                                 </tr>
                             }
                         }

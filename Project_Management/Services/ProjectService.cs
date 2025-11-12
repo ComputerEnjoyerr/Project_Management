@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Project_Management.Data;
 using Project_Management.Models;
 
@@ -34,7 +35,9 @@ namespace Project_Management.Services
 
         public Project GetById(int project)
         {
-            var proj = _context.Projects.FirstOrDefault(p => p.ProjectId == project);
+            var proj = _context.Projects
+                .Include(p => p.Objectives)
+                .FirstOrDefault(p => p.ProjectId == project);
             if (proj != null)
             {
                 return proj;
