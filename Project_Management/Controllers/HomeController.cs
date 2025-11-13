@@ -49,14 +49,27 @@ namespace Project_Management.Controllers
         [HttpPost]
         public IActionResult CreateProject(Project project)
         {
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            if (userEmail == null)
+            {
+                return Redirect("~/Identity/Account/Login");
+            }
+            // Dữ liệu thõa mãn các điều kiện
+            project.Status = "Planning";
+            project.CreatedAt = DateTime.Now;
+            project.StartDate ??= DateOnly.FromDateTime(DateTime.Now); // Nêu không nhập ngày bắt đầu thì mặc định là ngày hiện tại
+            project.EndDate ??= DateOnly.FromDateTime(DateTime.Now.AddMonths(1)); // Nêu không nhập ngày kết thúc thì mặc định là 1 tháng kể từ ngày hiện tại
+            project.Methodology ??= "Waterfall"; // Mặc định phương pháp là Waterfall
+            project.CreatedByEmail = userEmail;
+
+            ModelState.Clear(); // Xoá các lỗi kiểm tra trước đó
+
             if (ModelState.IsValid)
             {
                 // Kiểm tra ngày bắt đầu và kết thúc có phù hợp
                 if (project.IsDateValid())
                 {
-                    // Dữ liệu thõa mãn các điều kiện
-                    project.Status = "Planning";
-                    project.CreatedAt = DateTime.Now;
+
                     projectService.Add(project);
                     projectMemberService.AddMember(project.ProjectId, project.CreatedByEmail, role: "Manager");
                 }

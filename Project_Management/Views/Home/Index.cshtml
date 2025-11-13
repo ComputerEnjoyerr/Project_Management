@@ -89,7 +89,10 @@
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <!-- Cột thông tin -->
                             <div>
-                                <strong>@project.Name</strong><br />
+                                <strong>@project.Name</strong>
+                                <span class="badge bg-light text-dark">Từ ngày: @project.StartDate - Đến: @project.EndDate</span>
+                                
+                                <br />
                                 <small class="text-muted">
                                     PM: @project.CreatedByEmail |
                                     @project.Methodology |
