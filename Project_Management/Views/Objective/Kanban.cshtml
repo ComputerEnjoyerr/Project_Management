@@ -6,10 +6,10 @@
     ViewBag.Title = "Kanban - " + ViewBag.ProjectName;
     Layout = "~/Views/Shared/_Home.cshtml";
     var statuses = new[] {
-        new { Name = "Todo", Color = "bg-secondary"},
-        new { Name = "InProgress", Color = "bg-primary"},
-        new { Name = "Review", Color = "bg-warning"},
-        new { Name = "Done", Color = "bg-success"}
+         new { Name = "Todo", Header = "#d32f2f", Body = "#ffe3e3" },
+        new { Name = "InProgress", Header = "#1976d2", Body = "#d0ebff" },
+        new { Name = "Review", Header = "#f9a825", Body = "#fff3bf" },
+        new { Name = "Done", Header = "#2e7d32", Body = "#d3f9d8" }
     };
 
     var project = ViewBag.Project as Project_Management.Models.Project;
@@ -27,10 +27,10 @@
                 </div>
 
                 <div class="text-end">
-                    <span class="badge bg-light text-dark fs-6">
+                    <h1 class="badge bg-light text-dark fs-6">
                         <i class="fas fa-tasks me-1"></i>
                         @Model.Count Công việc
-                    </span>
+                    </h1>
                     <div class="mt-1">
                         <small class="text-muted">
                             Cập nhật lần cuối: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
@@ -42,7 +42,7 @@
     </div>
 
     <!-- Kanban Board -->
-    <div class="row kanban-board">
+    <div class="row kanban-board ">
         @foreach (var status in statuses)
         {
             var tasksInStatus = Model.Where(o => o.Status == status.Name).ToList();
@@ -50,15 +50,15 @@
 
             <div class="col-xl-3 col-lg-6 mb-4">
                 <div class="card border-0 shadow-sm h-100">
-                    <div class="card-header @status.Color text-white py-3">
+                    <div class="card-header text-white py-3" style="background-color: @status.Header">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <span class="fw-bold fs-6">@status.Name</span>
                             </div>
                         </div>
                     </div>
-                    <div class="card-body kanban-column p-3" data-status="@status.Name"
-                         style="min-height: 500px; background-color: #f8f9fa;">
+                    <div class="card-body rounded-bottom-2 rounded-top-0 kanban-column p-3" data-status="@status.Name"
+                         style="min-height: 500px; background-color:@status.Body;">
 
                         @if (tasksInStatus.Any())
                         {
