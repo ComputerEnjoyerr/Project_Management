@@ -63,6 +63,7 @@
                         <tr>
                             <th>Tên công việc</th>
                             <th>Trạng thái</th>
+                            <th>Người thực hiện</th>
                             <th>Ngày bắt đầu</th>
                             <th>Hạn hoàn thành</th>
                             <th>Thao tác</th>
@@ -76,6 +77,7 @@
                                 <tr>
                                     <td>@task.Title</td>
                                     <td>@task.Status</td>
+                                    <td>@task.AssignedToEmail</td>
                                     <td>@task.StartDate?.ToString("dd/MM/yyyy")</td>
                                     <td>@task.DueDate?.ToString("dd/MM/yyyy")</td>
                                     <td>

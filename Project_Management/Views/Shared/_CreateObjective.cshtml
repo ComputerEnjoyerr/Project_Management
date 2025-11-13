@@ -47,8 +47,8 @@
         <!-- Người được giao -->
         <div class="mt-3">
             <label class="form-label fw-bold">Giao cho</label>
-            <select asp-for="AssignedToEmail" name="AssignedToEmail" class="form-select">
-                <option value="">-- Chọn thành viên --</option>
+            <select asp-for="AssignedToEmail" name="AssignedToEmail" class="form-select" required>
+                <option value="@ViewBag.CurrentUser">-- Chọn thành viên --</option>
                 @if (ViewBag.Members != null)
                 {
                     foreach (var member in ViewBag.Members)
