@@ -17,8 +17,6 @@ namespace Project_Management.Controllers
             _userService = userService;
         }
 
-        // ---------- INDEX (MyTasks style) ----------
-        // GET: /Objectives?status=&priority=&projectId=
         public IActionResult Index(string status, string priority, int? projectId)
         {
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
@@ -26,145 +24,46 @@ namespace Project_Management.Controllers
             {
                 return Redirect("~/Identity/Account/Login"); // Identity tự động bỏ qua Pages
             }
-            var tasks = _service.GetByAssignedEmail(userEmail, status, priority, projectId);
             ViewBag.Projects = _projectService.GetByUser(userEmail);
             ViewBag.CurrentUser = userEmail;
-            return View(tasks);
+            return View();
         }
-
-        // ---------- DETAILS ----------
-        public IActionResult Details(int id)
-        {
-            var task = _service.GetById(id);
-            if (task == null) return NotFound();
-            // Optionally restrict: only assigned user or project member can view
-            return View(task);
-        }
-
-        // ---------- CREATE ----------
-        public IActionResult Create(int projectId)
+        public IActionResult Detail(string id)
         {
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
             if (userEmail == null)
             {
-                return Redirect("~/Identity/Account/Login");
+                return Redirect("~/Identity/Account/Login"); // Identity tự động bỏ qua Pages
             }
-
-            // check membership
-            if (!_service.IsProjectMember(projectId, userEmail))
-                return Forbid();
-
-            ViewBag.ProjectId = projectId;
-            ViewBag.CurrentUser = userEmail;
+            var obj = _service.GetByAssignedEmail(id);
             ViewBag.Members = _userService.GetUsers();
-            return View(new Objective { ProjectId = projectId, CreatedByEmail = userEmail });
+            return View(obj);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Objective model)
+        public IActionResult CreateTaskFromProjectDetail(ObjectiveCreateViewModel vm)
         {
-            var userEmail = User.FindFirstValue(ClaimTypes.Email);
-            if (userEmail == null)
+            if (!ModelState.IsValid)
             {
-                return Redirect("~/Identity/Account/Login");
+                return RedirectToAction("Details", "Project", new { id = vm.ProjectId });
             }
 
-            if (!_service.IsProjectMember(model.ProjectId, userEmail))
-                return Forbid();
-
-            if (!ModelState.IsValid) return View(model);
-
-            model.CreatedByEmail = userEmail;
-            _service.Create(model);
-            TempData["success"] = "Tạo công việc thành công";
-            return RedirectToAction("Index", "MyTasks");
-        }
-
-        // ---------- EDIT ----------
-        public IActionResult Edit(int id)
-        {
-            var userEmail = User.FindFirstValue(ClaimTypes.Email);
-            if (userEmail == null)
+            var objective = new Objective
             {
-                return Redirect("~/Identity/Account/Login");
-            }
+                ProjectId = vm.ProjectId,
+                Title = vm.Title,
+                Description = vm.Description,
+                Priority = vm.Priority,
+                Status = vm.Status,
+                AssignedToEmail = vm.AssignedToEmail,
+                StartDate = vm.StartDate.HasValue ? DateOnly.FromDateTime(vm.StartDate.Value) : DateOnly.FromDateTime(DateTime.Now),
+                DueDate = vm.DueDate.HasValue ? DateOnly.FromDateTime(vm.DueDate.Value) : null,
+                CreatedByEmail = User.FindFirstValue(ClaimTypes.Email)
+            };
 
-            var task = _service.GetById(id);
-            if (task == null) return NotFound();
-
-            //if (!_service.CanEditTask(id, userEmail))
-            //    return Forbid();
-
-            return View(task);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(Objective model)
-        {
-            var userEmail = User.FindFirstValue(ClaimTypes.Email);
-            if (userEmail == null)
-            {
-                return Redirect("~/Identity/Account/Login");
-            }
-
-            //if (!_service.CanEditTask(model.ObjectiveId, userEmail))
-            //    return Forbid();
-
-            //if (!ModelState.IsValid) return View(model);
-
-            _service.Update(model);
-            TempData["success"] = "Cập nhật công việc thành công";
-            return RedirectToAction("Index", "MyTasks");
-        }
-
-        // ---------- DELETE ----------
-        public IActionResult Delete(int id)
-        {
-            //var userEmail = User.FindFirstValue(ClaimTypes.Email);
-            //if (userEmail == null)
-            //{
-            //    return Redirect("~/Identity/Account/Login");
-            //}
-
-            //var task = _service.GetById(id);
-            //if (task == null) return NotFound();
-            ////if (!_service.CanEditTask(id, userEmail))
-            ////    return Forbid();
-
-            //return View(task);
-
-            var userEmail = User.FindFirstValue(ClaimTypes.Email);
-            if (userEmail == null)
-            {
-                return Redirect("~/Identity/Account/Login");
-            }
-
-            //if (!_service.CanEditTask(id, userEmail))
-            //    return Forbid();
-
-            _service.Delete(id);
-            TempData["success"] = "Xóa công việc thành công";
-            return RedirectToAction("Index", "MyTasks");
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
-        {
-            var userEmail = User.FindFirstValue(ClaimTypes.Email);
-            if (userEmail == null)
-            {
-                return Redirect("~/Identity/Account/Login");
-            }
-
-            //if (!_service.CanEditTask(id, userEmail))
-            //    return Forbid();
-
-            _service.Delete(id);
-            TempData["success"] = "Xóa công việc thành công";
-            return RedirectToAction("Index", "MyTasks");
+            _service.Add(objective);
+            return RedirectToAction("Detail", "Home", new { id = vm.ProjectId });
         }
     }
 }

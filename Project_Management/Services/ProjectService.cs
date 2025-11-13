@@ -25,12 +25,20 @@ namespace Project_Management.Services
 
         public List<Project> GetByUser(string userId)
         {
-            var userProjects = _context.Projects.Where(p => p.CreatedByEmail == userId).ToList();
+            var userProjects = _context.Projects
+                .Where(p => p.CreatedByEmail == userId)
+                .ToList();
+
             var memberProjects = _context.ProjectMembers
                 .Where(pm => pm.UserEmail == userId)
                 .Select(pm => pm.Project)
                 .ToList();
-            return userProjects.Concat(memberProjects).ToList(); // Loại bỏ trùng lặp nếu có
+
+            var allProjects = userProjects
+                .UnionBy(memberProjects, p => p.ProjectId) // loại bỏ trùng theo ProjectId
+                .ToList();
+
+            return allProjects;
         }
 
         public Project GetById(int project)

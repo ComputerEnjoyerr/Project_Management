@@ -12,22 +12,19 @@ namespace Project_Management.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IProjectService projectService;
+        private readonly IProjectMemberService projectMemberService;
         private readonly IUserService userService;
-        private readonly IKanbanService kanbanService;
-        private readonly IDashboardService dashboardService;
         private readonly IObjectiveService objectiveService;
         public HomeController(ILogger<HomeController> logger,
             IProjectService projectService, 
             IUserService userService,
-            IKanbanService kanbanService, 
-            IDashboardService dashboardService,
+            IProjectMemberService projectMemberService,
             IObjectiveService objectiveService)
         {
             _logger = logger;
             this.projectService = projectService;
             this.userService = userService;
-            this.kanbanService = kanbanService;
-            this.dashboardService = dashboardService;
+            this.projectMemberService = projectMemberService;
             this.objectiveService = objectiveService;
         }
 
@@ -41,8 +38,8 @@ namespace Project_Management.Controllers
             var userProjects = projectService.GetByUser(userEmail);
             ViewBag.Members = userService.GetUsers();
             ViewBag.CurrentUserEmail = userEmail;
-            ViewBag.KanbanPreviews = dashboardService.GetDashboardData(userEmail);
             ViewBag.TotalTasks = objectiveService.GetByAssignedEmail(userEmail);
+
             return View(userProjects);
         }
 
@@ -59,6 +56,7 @@ namespace Project_Management.Controllers
                     project.Status = "Planning";
                     project.CreatedAt = DateTime.Now;
                     projectService.Add(project);
+                    projectMemberService.AddMember(project.ProjectId, project.CreatedByEmail, role: "Manager");
                 }
                 //modelstate.addmodelerror("enddate", "Ngày kết thúc phải sau ngày bắt đầu");
             }
@@ -69,8 +67,20 @@ namespace Project_Management.Controllers
         public IActionResult Detail(int id)
         {
             var project = projectService.GetById(id);
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            if (project == null || userEmail == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            // Danh sách tài khoản
             ViewBag.Members = userService.GetUsers();
+            // Các tasks trong dự án
             ViewBag.ProjectTasks = objectiveService.GetByProject(project);
+            // Người tạo dự án
+            ViewBag.IsOwner = projectMemberService.IsProjectOwner(id, userEmail);
+            // User hiện tại
+            ViewBag.CurrentUser = userEmail;
             return View(project);
         }
 
@@ -91,28 +101,40 @@ namespace Project_Management.Controllers
 
         public IActionResult Update(int id)
         {
-            var project = projectService.GetById(id);
-            ViewBag.Members = userService.GetUsers();
-            return View(project);
-        }
-
-        public IActionResult Delete(int id)
-        {
-            projectService.Delete(id);
-            return RedirectToAction("Index");
-        }
-
-        [HttpPost]
-        public IActionResult GetKanbanPreview(int projectId)
-        {
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
             if (userEmail == null)
             {
                 return Redirect("~/Identity/Account/Login"); // Identity tự động bỏ qua Pages
             }
-            var kanbanPreview = dashboardService.GetKanbanPreview(projectId, userEmail);
+            if (projectMemberService.IsProjectOwner(id, userEmail))
+            {
+                var project = projectService.GetById(id);
+                ViewBag.Members = userService.GetUsers();
+                return View(project);
+                
+            }
+            return RedirectToAction("Index");
+        }
 
-            return PartialView("_KanbanPreviewPartial", kanbanPreview);
+        [HttpPost]
+        public IActionResult Delete(int id, string email)
+        {
+            if (email == null)
+            {
+                // Người dùng không phải thành viên dự án
+                return RedirectToAction("Index");
+            }
+            if (projectMemberService.IsProjectOwner(id, email)) // Thành viên dự án
+            {
+                projectService.Delete(id);
+                return RedirectToAction("Index");
+            }
+            else if (!projectMemberService.IsProjectOwner(id, email)) // Chủ sở hữu dự án
+            {
+                projectMemberService.RemoveMember(id, email);
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index");
         }
 
         public IActionResult Privacy()

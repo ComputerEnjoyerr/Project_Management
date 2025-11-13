@@ -11,6 +11,7 @@ namespace Project_Management.Services
         void AddMember(int projectId, string userEmail, string role);
         void RemoveMember(int projectId, string userEmail);
         bool IsUserInProject(int projectId, string userEmail);
+        bool IsProjectOwner(int id, string email);
     }
 
     public class ProjectMemberService : IProjectMemberService
@@ -59,6 +60,17 @@ namespace Project_Management.Services
         {
             return _context.ProjectMembers
                 .Any(pm => pm.ProjectId == projectId && pm.UserEmail == userEmail);
+        }
+
+        public bool IsProjectOwner(int id, string email)
+        {
+            var member = _context.ProjectMembers
+                .FirstOrDefault(pm => pm.ProjectId == id && pm.UserEmail == email);
+            if (member != null && member.Role != "Manager")
+            {
+                return false; // Không phải chủ sở hữu
+            }
+            return true; // Là chủ sở hữu hoặc không tìm thấy thành viên
         }
     }
 }

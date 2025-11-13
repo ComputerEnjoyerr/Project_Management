@@ -3,6 +3,8 @@
 @{
     ViewData["Title"] = "Project Detail";
     Layout = "~/Views/Shared/_Home.cshtml";
+    var isOwner = ViewBag.IsOwner as bool? ?? false;
+    var currentUser = ViewBag.CurrentUser as string;
 }
 
 <div class="container mt-5 mb-5">
@@ -12,8 +14,11 @@
             <div>
                 @* <a class="btn btn-sm btn-light" asp-controller="Kanban" asp-action="Index" asp-route-projectId="@Model?.ProjectId"><i class="bi bi-arrow-left"></i> Kanban</a> *@
                 <a class="btn btn-sm btn-light" asp-controller="MyTasks" asp-action="Index" asp-route-projectId="@Model?.ProjectId"><i class="bi bi-arrow-left"></i> Công việc của tôi</a>
-                <a class="btn btn-sm btn-light" asp-controller="ProjectMembers" asp-action="Index" asp-route-projectId="@Model?.ProjectId"><i class="bi bi-arrow-left"></i> Thành viên</a>
-                <a class="btn btn-sm btn-light me-2" asp-action="Update" asp-route-id="@Model?.ProjectId"><i class="bi bi-pencil"></i> Chỉnh sửa</a>
+                @if (isOwner)
+                {
+                    <a class="btn btn-sm btn-light" asp-controller="ProjectMembers" asp-action="Index" asp-route-projectId="@Model?.ProjectId"><i class="bi bi-arrow-left"></i> Thành viên</a>
+                    <a class="btn btn-sm btn-light me-2" asp-action="Update" asp-route-id="@Model?.ProjectId"><i class="bi bi-pencil"></i> Chỉnh sửa</a>
+                }
                 <a class="btn btn-sm btn-outline-light" asp-action="Index"><i class="bi bi-arrow-left"></i> Quay lại</a>
             </div>
         </div>
@@ -42,37 +47,12 @@
                     </ul>
                 </div>
 
-                <div class="col-md-6">
-                    <h5 class="fw-bold text-secondary mb-3">Tạo công việc mới</h5>
-                    <form asp-action="Create" asp-controller="Objective" method="post">
-                        <input type="hidden" name="ProjectId" value="@Model.ProjectId" />
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Tên công việc</label>
-                            <input name="TaskName" class="form-control" placeholder="Nhập tên công việc..." required />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Mô tả</label>
-                            <textarea name="TaskDescription" class="form-control" rows="3" placeholder="Nhập mô tả công việc..."></textarea>
-                        </div>
-
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Ngày bắt đầu</label>
-                                <input type="date" name="StartDate" class="form-control" />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Hạn hoàn thành</label>
-                                <input type="date" name="DueDate" class="form-control" />
-                            </div>
-                        </div>
-
-                        <div class="mt-4">
-                            <button type="submit" class="btn btn-success"><i class="bi bi-plus-circle"></i> Tạo công việc</button>
-                        </div>
-                    </form>
-                </div>
+                @if (Model != null)
+                {
+                    <div class="col-md-6">
+                        @await Html.PartialAsync("_CreateObjective", new Objective { ProjectId = Model.ProjectId })
+                    </div>
+                }
             </div>
 
             <div class="mt-5">
@@ -91,18 +71,21 @@
                     <tbody>
                         @if (Model.Objectives != null && Model.Objectives.Any())
                         {
-                            foreach (var stage in Model.Objectives)
+                            foreach (var task in Model.Objectives)
                             {
                                 <tr>
-                                    <td>@stage.Title</td>
-                                    <td>@stage.Status</td>
-                                    <td>@stage.StartDate?.ToString("dd/MM/yyyy")</td>
-                                    <td>@stage.DueDate?.ToString("dd/MM/yyyy")</td>
-                                    @* <td>
-                                        <a asp-action="TaskDetail" asp-route-id="@stage.ObjectiveId" class="btn btn-sm btn-outline-info"></a>
-                                        <a asp-action="EditTask" asp-route-id="@stage.ObjectiveId" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></a>
-                                        <a asp-action="DeleteTask" asp-route-id="@stage.ObjectiveId" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xác nhận xóa công việc này?')"><i class="bi bi-trash"></i></a>
-                                    </td> *@
+                                    <td>@task.Title</td>
+                                    <td>@task.Status</td>
+                                    <td>@task.StartDate?.ToString("dd/MM/yyyy")</td>
+                                    <td>@task.DueDate?.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        @if (task.CreatedByEmail == currentUser || task.AssignedToEmail == currentUser)
+                                        {
+                                            <a asp-action="Detail" asp-route-id="@task.ObjectiveId" class="btn btn-sm btn-outline-info">Mở</a>
+                                            <a asp-action="Edit" asp-route-id="@task.ObjectiveId" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i>Sửa</a>
+                                            <a asp-action="Delete" asp-route-id="@task.ObjectiveId" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xác nhận xóa công việc này?')"><i class="bi bi-trash"></i>Xóa</a>
+                                        }
+                                    </td>
                                 </tr>
                             }
                         }

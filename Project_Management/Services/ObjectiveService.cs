@@ -1,20 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Humanizer;
+using Microsoft.EntityFrameworkCore;
 using Project_Management.Data;
 using Project_Management.Models;
 using System;
 
 namespace Project_Management.Services
 {
-   public interface IObjectiveService
+    public interface IObjectiveService
     {
-        IEnumerable<Objective> GetByAssignedEmail(string email, string status = null, string priority = null, int? projectId = null);
-        Objective GetById(int id);
-        void Create(Objective obj);
-        void Update(Objective obj);
-        void Delete(int id);
-        bool IsProjectMember(int projectId, string email);
-        bool CanEditTask(int taskId, string email);
+        IEnumerable<Objective> GetByAssignedEmail(string userEmail);
         IEnumerable<Objective> GetByProject(Project project);
+        void Add(Objective objective);
+        void Update(Objective objective);
+        void Delete(int id);
+
+        bool IsAssignedTo(string userEmail, int objId);
+        bool IsCreator(string userEmail, int objId);
     }
 
     public class ObjectiveService : IObjectiveService
@@ -27,119 +28,61 @@ namespace Project_Management.Services
             this.applicationDb = applicationDb;
         }
 
-        public IEnumerable<Objective> GetByAssignedEmail(string email, string status = null, string priority = null, int? projectId = null)
+        public IEnumerable<Objective> GetByAssignedEmail(string userEmail)
         {
-            if (string.IsNullOrEmpty(email)) return Enumerable.Empty<Objective>();
-
-            var q = _db.Objectives.Include(o => o.Project).AsQueryable();
-
-            q = q.Where(o => o.AssignedToEmail != null && o.AssignedToEmail.ToLower() == email.ToLower());
-
-            if (!string.IsNullOrEmpty(status))
-                q = q.Where(o => o.Status == status);
-            if (!string.IsNullOrEmpty(priority))
-                q = q.Where(o => o.Priority == priority);
-            if (projectId.HasValue)
-                q = q.Where(o => o.ProjectId == projectId.Value);
-
-            return q.OrderByDescending(o => o.DueDate).ToList();
-        }
-
-        public Objective GetById(int id)
-        {
-            return _db.Objectives.Include(o => o.Project).FirstOrDefault(o => o.ObjectiveId == id);
-        }
-
-        public void Create(Objective obj)
-        {
-            obj.CreatedByEmail = obj.CreatedByEmail ?? throw new ArgumentNullException(nameof(obj.CreatedByEmail));
-            obj.Status ??= "Todo";
-            _db.Objectives.Add(obj);
-            _db.SaveChanges();
-        }
-
-        public void Update(Objective obj)
-        {
-            var exist = _db.Objectives.Find(obj.ObjectiveId);
-            if (exist == null) throw new InvalidOperationException("Objective not found");
-
-            // update allowed fields
-            exist.Title = obj.Title;
-            exist.Description = obj.Description;
-            exist.Priority = obj.Priority;
-            exist.Status = obj.Status;
-            exist.AssignedToEmail = obj.AssignedToEmail;
-            exist.StartDate = obj.StartDate;
-            exist.DueDate = obj.DueDate;
-
-            if (exist.Status == "Done" && exist.CompletedAt == null)
-                exist.CompletedAt = DateTime.UtcNow;
-            if (exist.Status != "Done")
-                exist.CompletedAt = null;
-
-            _db.SaveChanges();
-        }
-
-        public void Delete(int id)
-        {
-            var e = _db.Objectives.FirstOrDefault(o => o.ObjectiveId == id);
-            if (e != null)
-            {
-                _db.Objectives.Remove(e);
-                _db.SaveChanges();
-            }
-        }
-
-        public bool IsProjectMember(int projectId, string email)
-        {
-            if (string.IsNullOrEmpty(email))
-                return false;
-
-            // Lấy userId từ AspNetUsers
-            var userId = applicationDb.Users
-                .Where(u => u.Email.ToLower() == email.ToLower())
-                .Select(u => u.Email)
-                .FirstOrDefault();
-
-            // Nếu userId tồn tại trong ProjectMembers hoặc là người tạo project
-            bool isMember = _db.ProjectMembers.Any(pm => pm.ProjectId == projectId && pm.UserEmail == userId);
-            bool isOwner = _db.Projects.Any(p => p.ProjectId == projectId && p.CreatedByEmail.ToLower() == email.ToLower());
-
-            return isMember || isOwner;
-        }
-
-
-        public bool CanEditTask(int taskId, string email)
-        {
-            if (string.IsNullOrEmpty(email)) return false;
-
-            var task = _db.Objectives
+            return _db.Objectives
+                .Where(o => o.AssignedToEmail == userEmail)
                 .Include(o => o.Project)
-                .FirstOrDefault(o => o.ObjectiveId == taskId);
-
-            if (task == null) return false;
-
-            // thành viên của dự án
-            bool isMember = _db.ProjectMembers
-                .Any(pm => pm.ProjectId == task.ProjectId && pm.UserEmail == email);
-
-            // người tạo dự án
-            bool isProjectOwner = !string.IsNullOrEmpty(task.Project?.CreatedByEmail)
-                && task.Project.CreatedByEmail.ToLower() == email.ToLower();
-
-            // người tạo task (cho chắc)
-            bool isTaskCreator = !string.IsNullOrEmpty(task.CreatedByEmail)
-                && task.CreatedByEmail.ToLower() == email.ToLower();
-
-            return isMember || isProjectOwner || isTaskCreator;
-
+                .ToList();
         }
 
         public IEnumerable<Objective> GetByProject(Project project)
         {
             return _db.Objectives
-                .Include (o => o.Project)
-                .Where(o => o.ProjectId ==  project.ProjectId).ToList();
+                .Where(o => o.ProjectId == project.ProjectId)
+                .Include(o => o.Project)
+                .ToList();
+        }
+
+        public void Add(Objective objective)
+        {
+            _db.Objectives.Add(objective);
+            _db.SaveChanges();
+        }
+
+        public void Update(Objective objective)
+        {
+            _db.Objectives.Update(objective);
+            _db.SaveChanges();
+        }
+
+        public void Delete(int id)
+        {
+            var obj = _db.Objectives.FirstOrDefault(o => o.ObjectiveId == id);
+            if (obj != null)
+            {
+                _db.Remove(obj);
+                _db.SaveChanges();
+            }
+        }
+        // Nếu ko phải là ng được giao task thì ko thể xóa hoặc sửa
+        public bool IsAssignedTo(string userEmail, int objId)
+        {
+            var obj = _db.Objectives
+                .FirstOrDefault(o => o.ObjectiveId == objId &&
+                                     o.AssignedToEmail == userEmail);
+            if (obj != null) return true;
+            return false;
+        }
+
+        // Là người tạo task hay ko
+        public bool IsCreator(string userEmail, int objId)
+        {
+            var obj = _db.Objectives
+                .FirstOrDefault(o => o.CreatedByEmail ==  userEmail &&
+                                     o.ObjectiveId == objId);
+            if (obj != null) return true;
+            return false;
         }
     }
 }
