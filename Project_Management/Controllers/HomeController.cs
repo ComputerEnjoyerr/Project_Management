@@ -35,11 +35,13 @@ namespace Project_Management.Controllers
             {
                 return Redirect("~/Identity/Account/Login"); // Identity tự động bỏ qua Pages
             }
-            var userProjects = projectService.GetByUser(userEmail);
+            var userProjects = projectService
+                .GetByUser(userEmail)
+                .OrderByDescending(p => p.CreatedAt);
             ViewBag.Members = userService.GetUsers();
             ViewBag.CurrentUserEmail = userEmail;
             ViewBag.TotalTasks = objectiveService.GetByAssignedEmail(userEmail);
-
+            ViewBag.TotalMembers = projectMemberService.GetTotalMembersByProjectIds(userProjects.Select(p => p.ProjectId));
             return View(userProjects);
         }
 
@@ -74,7 +76,7 @@ namespace Project_Management.Controllers
             }
 
             // Danh sách tài khoản
-            ViewBag.Members = userService.GetUsers();
+            ViewBag.Members = userService.GetUsersInProject(project.ProjectId);
             // Các tasks trong dự án
             ViewBag.ProjectTasks = objectiveService.GetByProject(project);
             // Người tạo dự án

@@ -3,7 +3,7 @@
     Layout = "~/Views/Shared/_Home.cshtml";
     var currentUserEmail = ViewBag.CurrentUserEmail as string;
 }
-@model List<Project_Management.Models.Project>
+@model IEnumerable<Project_Management.Models.Project>
 
 <!-- Top bar -->
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -28,7 +28,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="text-muted small">Dự án</div>
-                    <h4>@Model.Count</h4>
+                    <h4>@Model.Count()</h4>
                 </div>
                 <div><i class="fa fa-folder fa-2x text-primary"></i></div>
             </div>
@@ -52,7 +52,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="text-muted small">Nhân sự</div>
-                    <h4></h4>
+                    <h4>@ViewBag.TotalMembers.Count</h4>
                 </div>
                 <div><i class="fa fa-users fa-2x text-success"></i></div>
             </div>
@@ -82,7 +82,7 @@
                 <small class="text-muted">Sắp xếp: Mới nhất</small>
             </div>
             <ul class="list-group list-group-flush">
-                @if (Model != null && Model.Count > 0)
+                @if (Model != null && Model.Count() > 0)
                 {
                     @foreach (var project in Model)
                     {
@@ -110,7 +110,14 @@
                                     <!-- Sửa -->
                                     <a class="btn btn-sm btn-outline-warning"
                                        asp-action="Update"
-                                       asp-route-id="@project.ProjectId">Sửa</a>
+                                       asp-route-id="@project.ProjectId">Cập nhật</a>
+
+                                    <!-- Kanban -->
+                                    <a asp-action="Kanban" 
+                                       asp-controller="Objective" 
+                                       asp-route-projectId="@project.ProjectId" 
+                                       class="btn btn-sm btn-outline-secondary">Bảng Kanban</a>
+
 
                                     <!-- Xóa -->
                                     <form asp-action="Delete"

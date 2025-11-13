@@ -12,14 +12,18 @@ namespace Project_Management.Services
         void RemoveMember(int projectId, string userEmail);
         bool IsUserInProject(int projectId, string userEmail);
         bool IsProjectOwner(int id, string email);
+        IEnumerable<ApplicationUser> GetTotalMembersByProjectIds(IEnumerable<int> enumerable);
     }
 
     public class ProjectMemberService : IProjectMemberService
     {
         private readonly ProjectManagementDbContext _context;
-        public ProjectMemberService(ProjectManagementDbContext context)
+        private readonly ApplicationDbContext _applicationDbContext;
+        public ProjectMemberService(ProjectManagementDbContext context,
+            ApplicationDbContext applicationDbContext)
         {
             _context = context;
+            _applicationDbContext = applicationDbContext;
         }
 
         public IEnumerable<ProjectMember> GetMembersByProject(int projectId)
@@ -71,6 +75,17 @@ namespace Project_Management.Services
                 return false; // Không phải chủ sở hữu
             }
             return true; // Là chủ sở hữu hoặc không tìm thấy thành viên
+        }
+
+        public IEnumerable<ApplicationUser> GetTotalMembersByProjectIds(IEnumerable<int> enumerable)
+        {
+            var projectMembers = _context.ProjectMembers
+                .Where(pm => enumerable.Contains(pm.ProjectId))
+                .ToList();
+            var totalMembers = _applicationDbContext.Users
+                .Where(u => projectMembers.Select(pm => pm.UserEmail).Contains(u.Email))
+                .ToList();
+            return totalMembers;
         }
     }
 }

@@ -28,11 +28,6 @@ namespace Project_Management.Controllers
             return View(tasks);
         }
 
-        [HttpPost]
-        public IActionResult UpdateStatus(int id, string status)
-        {
-            _myTaskService.UpdateStatus(id, status);
-            return RedirectToAction(nameof(Index));
-        }
+
     }
 }

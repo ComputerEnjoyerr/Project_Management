@@ -1,91 +1,64 @@
 ﻿@model Project_Management.Models.Objective
 
 @{
-    ViewData["Title"] = "Detail";
+    ViewData["Title"] = "Chi tiết nhiệm vụ";
     Layout = "~/Views/Shared/_Home.cshtml";
 }
 
-<h1>Detail</h1>
+<div class="container mt-5">
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center rounded-top-4">
+            <h4 class="mb-0">
+                <i class="bi bi-clipboard2-check me-2"></i>Chi tiết nhiệm vụ
+            </h4>
+            <div>
+                <a asp-action="Index" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left"></i> Công việc của tôi
+                </a>
+            </div>
+        </div>
 
-<div>
-    <h4>Objective</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Priority)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Priority)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AssignedToEmail)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AssignedToEmail)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedByEmail)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedByEmail)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DueDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DueDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CompletedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CompletedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Milestone)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Milestone.MilestoneId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Project)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Project.CreatedByEmail)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sprint)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sprint.SprintId)
-        </dd>
-    </dl>
+        <div class="card-body p-4">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p><strong>Tiêu đề:</strong> @Model.Title</p>
+                    <p><strong>Mô tả:</strong> @Model.Description</p>
+                    <p><strong>Độ ưu tiên:</strong> <span class="badge bg-@(Model.Priority == "Cao" ? "danger" : Model.Priority == "Trung bình" ? "warning" : "success")">@Model.Priority</span></p>
+                    <p><strong>Trạng thái:</strong> <span class="badge bg-@(Model.Status == "Hoàn thành" ? "success" : Model.Status == "Đang thực hiện" ? "info" : "secondary")">@Model.Status</span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Giao cho:</strong> @Model.AssignedToEmail</p>
+                    <p><strong>Tạo bởi:</strong> @Model.CreatedByEmail</p>
+                    <p><strong>Ngày bắt đầu:</strong> @Model.StartDate?.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Hạn chót:</strong> @Model.DueDate?.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Hoàn thành lúc:</strong> @Model.CompletedAt?.ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+            </div>
+
+            <hr />
+            <div>
+                <p><strong>Dự án:</strong> @Model.Project?.Name</p>
+                <p><strong>Email người tạo dự án:</strong> @Model.Project?.CreatedByEmail</p>
+            </div>
+        </div>
+
+        <div class="card-footer text-end text-white bg-light rounded-bottom-4">
+
+            <a asp-action="Update" asp-route-id="@Model.ObjectiveId" class="btn btn-warning me-2">
+                <i class="bi bi-pencil-square"></i> Cập nhật
+            </a>
+            <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa nhiệm vụ này không?');">
+                <input type="hidden" name="id" value="@Model.ObjectiveId" />
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Xóa
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.ObjectiveId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Scripts {
+    <script>
+        // Có thể thêm hiệu ứng hoặc xử lý JS sau này tại đây
+    </script>
+}

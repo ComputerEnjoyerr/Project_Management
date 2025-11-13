@@ -13,9 +13,11 @@ namespace Project_Management.Services
         void Add(Objective objective);
         void Update(Objective objective);
         void Delete(int id);
-
+        Objective GetById(int id);
         bool IsAssignedTo(string userEmail, int objId);
         bool IsCreator(string userEmail, int objId);
+        IEnumerable<Objective> GetTasksForUser(string userEmail, string status, string priority, int? projectId);
+        void UpdateStatus(int id, string status);
     }
 
     public class ObjectiveService : IObjectiveService
@@ -34,6 +36,14 @@ namespace Project_Management.Services
                 .Where(o => o.AssignedToEmail == userEmail)
                 .Include(o => o.Project)
                 .ToList();
+        }
+
+        public Objective GetById(int id)
+        {
+            var obj = _db.Objectives
+                .Include(o => o.Project)
+                .FirstOrDefault(o => o.ObjectiveId == id);
+            return obj;
         }
 
         public IEnumerable<Objective> GetByProject(Project project)
@@ -83,6 +93,34 @@ namespace Project_Management.Services
                                      o.ObjectiveId == objId);
             if (obj != null) return true;
             return false;
+        }
+
+        public IEnumerable<Objective> GetTasksForUser(string userEmail, string status = null, string priority = null, int? projectId = null)
+        {
+            var query = _db.Objectives
+                .Include(o => o.Project)
+                .Where(o => o.AssignedToEmail == userEmail)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(status))
+                query = query.Where(o => o.Status == status);
+            if (!string.IsNullOrEmpty(priority))
+                query = query.Where(o => o.Priority == priority);
+            if (projectId.HasValue)
+                query = query.Where(o => o.ProjectId == projectId.Value);
+
+            return query.OrderByDescending(o => o.DueDate).ToList();
+        }
+
+        public void UpdateStatus(int taskId, string status)
+        {
+            var task = _db.Objectives.Find(taskId);
+            if (task == null) return;
+
+            task.Status = status;
+            if (status == "Done") task.CompletedAt = DateTime.Now;
+
+            _db.SaveChanges();
         }
     }
 }

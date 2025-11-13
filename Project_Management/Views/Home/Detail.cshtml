@@ -38,7 +38,7 @@
                             <li class="list-group-item"><strong>Ngày kết thúc:</strong> @Model.EndDate?.ToString("dd/MM/yyyy")</li>
                             <li class="list-group-item"><strong>Hoàn thành lúc:</strong> @Model.CompletedAt?.ToString("dd/MM/yyyy HH:mm")</li>
                             <li class="list-group-item"><strong>Người tạo:</strong> @Model.CreatedByEmail</li>
-                            <li class="list-group-item"><strong>Ngày tạo:</strong> @Model.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</li>
+                            <li class="list-group-item"><strong>Ngày tạo:</strong> @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</li>
                        }
                        else
                        {
@@ -57,7 +57,7 @@
 
             <div class="mt-5">
                 <h5 class="fw-bold text-secondary mb-3">Danh sách công việc</h5>
-                
+                <a asp-action="Kanban" asp-controller="Objective" asp-route-projectId="@Model.ProjectId" class="btn btn-sm btn-outline-secondary mb-3">Bảng Kanban</a>
                 <table class="table table-hover table-bordered align-middle">
                     <thead class="table-light">
                         <tr>
@@ -83,9 +83,13 @@
                                     <td>
                                         @if (task.CreatedByEmail == currentUser || task.AssignedToEmail == currentUser)
                                         {
-                                            <a asp-action="Detail" asp-route-id="@task.ObjectiveId" class="btn btn-sm btn-outline-info">Mở</a>
-                                            <a asp-action="Edit" asp-route-id="@task.ObjectiveId" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i>Sửa</a>
-                                            <a asp-action="Delete" asp-route-id="@task.ObjectiveId" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xác nhận xóa công việc này?')"><i class="bi bi-trash"></i>Xóa</a>
+                                            <a asp-action="Detail" asp-controller="Objective" asp-route-id="@task.ObjectiveId" class="btn btn-sm btn-outline-primary">Mở</a>
+                                            <a asp-action="Update" asp-controller="Objective" asp-route-id="@task.ObjectiveId" class="btn btn-sm btn-outline-warning">Cập nhật</a>
+                                            <form asp-action="Delete" asp-controller="Objective" method="post" class="d-inline"
+                                                  onsubmit="return confirm('Bạn có chắc muốn xóa công việc này không?');">
+                                                <input type="hidden" name="id" value="@task.ObjectiveId" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
+                                            </form>
                                         }
                                     </td>
                                 </tr>

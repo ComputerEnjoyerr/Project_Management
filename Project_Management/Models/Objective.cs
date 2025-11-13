@@ -59,3 +59,21 @@ public class ObjectiveCreateViewModel
     public DateTime? StartDate { get; set; }
     public DateTime? DueDate { get; set; }
 }
+
+public class ObjectiveUpdateViewModel
+{
+    public int ObjectiveId { get; set; }
+    public int ProjectId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string Priority { get; set; } = "Normal";
+    public string Status { get; set; } = "Todo";
+    public string? AssignedToEmail { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? DueDate { get; set; }
+}
+
+public class ObjectiveUpdateStatusModel
+{
+    public string Status { get; set; }
+}
