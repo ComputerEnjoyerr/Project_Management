@@ -4,12 +4,12 @@
     Layout = "~/Views/Shared/_Home.cshtml";
 }
 
-<div class="container py-4">
+<div class="container-fluid mt-5 mb-5">
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Cập nhật nhiệm vụ</h5>
-            <a asp-action="Index" class="btn btn-light btn-sm">
-                <i class="bi bi-arrow-left-circle"></i> Quay lại danh sách
+        <div class="card-header bg-warning d-flex justify-content-between align-items-center text-black py-3 rounded-top-4">
+            <h3 class="mb-0">Cập nhật công việc</h3>
+            <a asp-action="Detail" asp-controller="Home" asp-route-id="@Model.ProjectId" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-arrow-left-circle"></i> Quay lại dự án
             </a>
         </div>
 
@@ -81,13 +81,9 @@
                 </div>
 
                 <!-- Nút hành động -->
-                <div class="mt-4 text-end">
-                    <button type="submit" class="btn btn-success px-4">
-                        <i class="bi bi-check-circle"></i> Lưu thay đổi
-                    </button>
-                    <button type="reset" class="btn btn-outline-secondary ms-2">
-                        <i class="bi bi-arrow-counterclockwise"></i> Làm lại
-                    </button>
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left"></i> Công việc của tôi</a>
+                    <button type="submit" class="btn btn-success px-4">Lưu thay đổi</button>
                 </div>
             </form>
         </div>
