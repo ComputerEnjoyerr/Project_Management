@@ -21,7 +21,7 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="h3 mb-1">@(project?.Name ?? "Project")</h1>
+                    <h1 class="h3 mb-1">@(project?.Name ?? "Errror")</h1>
                     <p class="text-muted mb-0">@(project?.Description ?? "Chưa có mô tả")</p>
 
                 </div>
@@ -33,7 +33,7 @@
                     </h1>
                     <div class="mt-1">
                         <small class="text-muted">
-                            Cập nhật lần cuối: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+                            Được xem lần cuối: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
                         </small>
                     </div>
                 </div>
