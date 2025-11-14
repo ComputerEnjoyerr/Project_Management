@@ -17,9 +17,9 @@ public partial class Objective
 
     public string? Description { get; set; }
 
-    public string? Priority { get; set; }
+    public string Priority { get; set; } = "Normal";
 
-    public string? Status { get; set; }
+    public string Status { get; set; } = "Todo";
 
     public string? AssignedToEmail { get; set; }
 
@@ -46,4 +46,34 @@ public partial class Objective
     public virtual ICollection<TaskHistory> TaskHistories { get; set; } = new List<TaskHistory>();
 
     public virtual ICollection<TimeEntry> TimeEntries { get; set; } = new List<TimeEntry>();
+}
+
+public class ObjectiveCreateViewModel
+{
+    public int ProjectId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string Priority { get; set; } = "Normal";
+    public string Status { get; set; } = "Todo";
+    public string? AssignedToEmail { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? DueDate { get; set; }
+}
+
+public class ObjectiveUpdateViewModel
+{
+    public int ObjectiveId { get; set; }
+    public int ProjectId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string Priority { get; set; } = "Normal";
+    public string Status { get; set; } = "Todo";
+    public string? AssignedToEmail { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? DueDate { get; set; }
+}
+
+public class ObjectiveUpdateStatusModel
+{
+    public string Status { get; set; }
 }

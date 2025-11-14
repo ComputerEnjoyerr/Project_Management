@@ -1,0 +1,91 @@
+﻿@model Project_Management.Models.Objective
+@{
+    ViewData["Title"] = "Cập nhật công việc";
+    Layout = "~/Views/Shared/_Home.cshtml";
+}
+
+<div class="container-fluid mt-5 mb-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-warning d-flex justify-content-between align-items-center text-black py-3 rounded-top-4">
+            <h3 class="mb-0">Cập nhật công việc</h3>
+            <a asp-action="Detail" asp-controller="Home" asp-route-id="@Model.ProjectId" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-arrow-left-circle"></i> Quay lại dự án
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            <form asp-action="Update" asp-controller="Objective" method="post">
+                <input type="hidden" asp-for="ObjectiveId" />
+
+                <!-- Tên công việc -->
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label fw-bold">Tên công việc</label>
+                    <input asp-for="Title" class="form-control" placeholder="Nhập tên công việc..." required />
+                </div>
+
+                <!-- Mô tả -->
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-bold">Mô tả</label>
+                    <textarea asp-for="Description" class="form-control" rows="3" placeholder="Nhập mô tả công việc..."></textarea>
+                </div>
+
+                <!-- Ưu tiên và Trạng thái -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Priority" class="form-label fw-bold">Mức độ ưu tiên</label>
+                        <select asp-for="Priority" class="form-select">
+                            <option value="Low">Thấp</option>
+                            <option value="Normal">Bình thường</option>
+                            <option value="High">Cao</option>
+                            <option value="Critical">Quan trọng</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Status" class="form-label fw-bold">Trạng thái</label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="Todo">Cần làm</option>
+                            <option value="InProgress">Đang thực hiện</option>
+                            <option value="Review">Đang review</option>
+                            <option value="Done">Hoàn thành</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Người được giao -->
+                <div class="mt-3">
+                    <label asp-for="AssignedToEmail" class="form-label fw-bold">Giao cho</label>
+                    <select asp-for="AssignedToEmail" class="form-select" required>
+                        <option value="">-- Chọn thành viên --</option>
+                        @if (ViewBag.Members != null)
+                        {
+                            foreach (var member in ViewBag.Members)
+                            {
+                                <option value="@member.Email" selected="@(Model.AssignedToEmail == member.Email)">
+                                    @member.Email
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- Ngày bắt đầu và hạn hoàn thành -->
+                <div class="row g-3 mt-3">
+                    <div class="col-md-6">
+                        <label asp-for="StartDate" class="form-label fw-bold">Ngày bắt đầu</label>
+                        <input asp-for="StartDate" type="date" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="DueDate" class="form-label fw-bold">Hạn hoàn thành</label>
+                        <input asp-for="DueDate" type="date" class="form-control" />
+                    </div>
+                </div>
+
+                <!-- Nút hành động -->
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left"></i> Công việc của tôi</a>
+                    <button type="submit" class="btn btn-success px-4">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

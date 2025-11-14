@@ -1,0 +1,96 @@
+﻿@model Project_Management.Models.Project
+
+@{
+    ViewData["Title"] = "Update Project";
+    Layout = "~/Views/Shared/_Home.cshtml";
+}
+
+<div class="container-fluid mt-5 mb-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-warning text-black py-3 rounded-top-4">
+            <h3 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Cập nhật dự án</h3>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Update" class="needs-validation" novalidate>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <input type="hidden" asp-for="ProjectId" />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Name" class="form-label fw-bold"></label>
+                        <input asp-for="Name" class="form-control" placeholder="Nhập tên dự án..." />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Methodology" class="form-label fw-bold"></label>
+                        <select asp-for="Methodology" class="form-select">
+                            <option value="">-- Chọn phương pháp --</option>
+                            <option>Agile</option>
+                            <option>Scrum</option>
+                            <option>Waterfall</option>
+                        </select>
+                        <span asp-validation-for="Methodology" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label asp-for="Description" class="form-label fw-bold"></label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Mô tả dự án..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Status" class="form-label fw-bold"></label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="">-- Chọn trạng thái --</option>
+                            <option>Planning</option>
+                            <option>In Progress</option>
+                            <option>Completed</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="StartDate" class="form-label fw-bold"></label>
+                        <input asp-for="StartDate" type="date" class="form-control" />
+                        <span asp-validation-for="StartDate" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="EndDate" class="form-label fw-bold"></label>
+                        <input asp-for="EndDate" type="date" class="form-control" />
+                        <span asp-validation-for="EndDate" class="text-danger small"></span>
+                    </div>
+                    @* <div class="col-md-6">
+                        <label asp-for="CompletedAt" class="form-label fw-bold"></label>
+                        <input asp-for="CompletedAt" type="date" class="form-control" />
+                        <span asp-validation-for="CompletedAt" class="text-danger small"></span>
+                    </div> *@
+
+                    <div class="mb-3">
+                        <label class="form-label">Quản lý dự án</label>
+                        <select asp-for="CreatedByEmail" class="form-select">
+                            <option value="">-- Chọn --</option>
+                            @foreach (var member in ViewBag.Members)
+                            {
+                                <option value="@member.Email">@member.Email</option>
+                            }
+                        </select>
+                        <span asp-validation-for="CreatedByEmail" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left"></i> Quay lại danh sách</a>
+                    <button type="submit" class="btn btn-success px-4">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -26,7 +26,7 @@ public partial class Project
     [Required(ErrorMessage = "Vui lòng chọn người quản lý dự án")]
     public string? CreatedByEmail { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public virtual ICollection<ChatRoom> ChatRooms { get; set; } = new List<ChatRoom>();
 

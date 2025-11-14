@@ -1,0 +1,69 @@
+﻿@model Project_Management.Models.Objective
+
+@{
+    ViewData["Title"] = "Chi tiết nhiệm vụ";
+    Layout = "~/Views/Shared/_Home.cshtml";
+}
+
+<div class="container-fluid mt-5 mb-5">
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center text-black py-3 rounded-top-4">
+            <h3 class="mb-0">Chi tiết công việc</h3>
+            <div>
+                <a asp-action="Detail" asp-route-id="@Model.ProjectId" asp-controller="Home" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left"></i> Quay lại dự án
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p><strong>Tiêu đề:</strong> @Model.Title</p>
+                    <p><strong>Mô tả:</strong> @Model.Description</p>
+                    <p><strong>Độ ưu tiên:</strong> <span class="badge bg-@(Model.Priority == "Cao" ? "danger" : Model.Priority == "Trung bình" ? "warning" : "success")">@Model.Priority</span></p>
+                    <p><strong>Trạng thái:</strong> <span class="badge bg-@(Model.Status == "Hoàn thành" ? "success" : Model.Status == "Đang thực hiện" ? "info" : "secondary")">@Model.Status</span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Giao cho:</strong> @Model.AssignedToEmail</p>
+                    <p><strong>Tạo bởi:</strong> @Model.CreatedByEmail</p>
+                    <p><strong>Ngày bắt đầu:</strong> @Model.StartDate?.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Hạn chót:</strong> @Model.DueDate?.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Hoàn thành lúc:</strong> @Model.CompletedAt?.ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+            </div>
+
+            <hr />
+            <div>
+                <p><strong>Dự án:</strong> @Model.Project?.Name</p>
+                <p><strong>Email người tạo dự án:</strong> @Model.Project?.CreatedByEmail</p>
+            </div>
+        </div>
+
+
+        <div class="card-footer rounded-bottom-4 d-flex justify-content-between align-items-center mt-4">
+            <div>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Công việc của tôi
+                </a>
+            </div>
+            <div>
+                <a asp-action="Update" asp-route-id="@Model.ObjectiveId" class="btn btn-warning me-2">
+                    <i class="bi bi-pencil-square"></i> Cập nhật
+                </a>
+                <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa nhiệm vụ này không?');">
+                    <input type="hidden" name="id" value="@Model.ObjectiveId" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Xóa
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Có thể thêm hiệu ứng hoặc xử lý JS sau này tại đây
+    </script>
+}

@@ -8,6 +8,7 @@
     <div class="mb-3">
         <label class="form-label">Tên dự án</label>
         <input asp-for="Name" class="form-control" />
+        
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
@@ -52,7 +53,7 @@
         <span asp-validation-for="Status" class="text-danger"></span>
     </div> *@
 
-    <div class="mb-3">
+    @* <div class="mb-3">
         <label class="form-label">Quản lý dự án</label>
         <select asp-for="CreatedByEmail" class="form-select">
             <option value="">-- Chọn --</option>
@@ -62,7 +63,8 @@
             }
         </select>
         <span asp-validation-for="CreatedByEmail" class="text-danger"></span>
-    </div>
+    </div> *@
+    <input asp-for="CreatedByEmail" value="@ViewBag.CurrentUserEmail" class="form-control" type="hidden" />
 
     <div class="text-end">
         <button type="submit" class="btn btn-primary">Lưu</button>

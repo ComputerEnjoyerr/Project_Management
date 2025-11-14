@@ -45,8 +45,7 @@
                 {
                     <option value="@p.ProjectId">@p.Name</option>
                 }
-            }
-            else
+            } else
             {
                 <option disabled>Không có dự án</option>
             }
@@ -89,7 +88,7 @@
                         {
                             <span>Hoàn thành: <strong class="text-success">@task.CompletedAt?.ToString("yyyy-MM-dd")</strong></span>
                         }
-                        else
+                                else
                         {
                             <span>Hạn: <strong class="text-danger">@task.DueDate?.ToString("yyyy-MM-dd")</strong></span>
                         }
@@ -100,7 +99,7 @@
                             <strong class="text-@(task.Priority == "High" || task.Priority == "Critical" ? "danger" : "secondary")">@task.Priority</strong>
                         </div>
 
-                        @* @if (task.Status != "Done")
+                        @if (task.Status != "Done")
                         {
                             <form asp-action="UpdateStatus" method="post" class="m-0">
                                 <input type="hidden" name="id" value="@task.ObjectiveId" />
@@ -110,8 +109,8 @@
                         }
                         else
                         {
-                            <button class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); viewHistory(@task.ObjectiveId)">Quay Lại</button>
-                        } *@
+                            <button class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); viewHistory(@task.ObjectiveId)">Lịch sử</button>
+                        }
                     </div>
                 </div>
             </div>
@@ -129,7 +128,7 @@ else
 @section Scripts {
     <script>
         function openTaskDetail(id) {
-            window.location.href = '/Objective/Detail/' + id;
+            window.location.href = '/Objective/Details/' + id;
         }
 
         // function viewHistory(id) {

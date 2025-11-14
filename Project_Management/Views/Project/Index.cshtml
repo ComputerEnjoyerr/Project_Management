@@ -1,152 +1,418 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@* Views/Kanban/Index.cshtml
 @{
-    ViewBag.Title = "Dự án";
+    ViewBag.Title = $"Dự án";
     Layout = "~/Views/Shared/_Home.cshtml";
 }
-<div class="project-header shadow-sm">
+
+<div class="project-header shadow-sm bg-white p-4 rounded">
     <div class="d-flex justify-content-between align-items-center">
         <div>
-            <h4>Website bán hàng</h4>
-            <div class="text-muted small">PM: <strong>Trần B</strong> | Phương pháp: <span class="badge bg-primary">Agile</span></div>
+            <h4 class="mb-1">@Model.Project.Name</h4>
+            <div class="text-muted small">
+                Người tạo: <strong>@Model.Project.CreatedByEmail</strong> |
+                Phương pháp: <span class="badge bg-primary">@Model.Project.Methodology</span> |
+                Trạng thái: <span class="badge bg-info">@Model.Project.Status</span>
+            </div>
         </div>
         <div class="d-flex gap-2">
-            <button class="btn btn-outline-primary btn-sm"><i class="fa fa-edit"></i> Chỉnh sửa</button>
-            <button class="btn btn-outline-danger btn-sm"><i class="fa fa-trash"></i> Xóa</button>
-        </div>
-    </div>
-    <div class="mt-3 mb-5">
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="small text-muted">Tiến độ dự án</div>
-            <div class="small text-muted">75%</div>
-        </div>
-        <div class="progress">
-            <div class="progress-bar bg-success" style="width:75%"></div>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createTaskModal">
+                <i class="fa fa-plus"></i> Thêm Task
+            </button>
+            <a href="@Url.Action("Index", "Projects")" class="btn btn-outline-secondary btn-sm">
+                <i class="fa fa-arrow-left"></i> Quay lại
+            </a>
         </div>
     </div>
 </div>
-<!-- Tabs -->
-<ul class="nav nav-tabs" id="projectTabs" role="tablist">
-    <li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#overview">Tổng quan</button></li>
-    <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tasks">Công việc</button></li>
-    <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#members">Thành viên</button></li>
-    <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#chat">Chat nhóm</button></li>
-    <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#timeline">Lịch & Tiến độ</button></li>
-</ul>
 
+<!-- Kanban Board -->
+<div class="kanban-board mt-4">
+    <div class="row g-3" id="kanbanColumns">
+        @foreach (var stage in Model.Stages)
+        {
+            var stageTasks = Model.Objectives.Where(o => o.Status == stage.Name).ToList();
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="kanban-column border rounded p-3 bg-light h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0 fw-bold">@stage.Name</h6>
+                        <span class="badge bg-primary rounded-pill">@stageTasks.Count</span>
+                    </div>
 
-<div class="tab-content mt-3">
-    <!-- Tổng quan -->
-    <div class="tab-pane fade show active tab-content-section" id="overview">
-        <h5>Thông tin dự án</h5>
-        <p><strong>Mô tả:</strong> Dự án xây dựng website thương mại điện tử, hỗ trợ thanh toán online, quản lý kho và báo cáo bán hàng.</p>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card p-3 mb-3">
-                    <strong>Ngày bắt đầu:</strong>
-                    <div>2025-09-15</div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card p-3 mb-3">
-                    <strong>Ngày kết thúc:</strong>
-                    <div>2025-12-30</div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card p-3 mb-3">
-                    <strong>Trạng thái:</strong>
-                    <div><span class="badge bg-success">Đang triển khai</span></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Công việc -->
-    <div class="tab-pane fade tab-content-section" id="tasks">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5>Bảng công việc (Kanban)</h5>
-            <button class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Thêm task</button>
-        </div>
-        <div class="row g-3">
-            <div class="col-md-3">
-                <div class="kanban-column">
-                    <strong>Todo</strong>
-                    <div class="card-task p-2 mt-2 bg-white shadow-sm rounded">
-                        <strong>Thiết kế giao diện</strong>
-                        <div class="small text-muted">Assignee: TB | Priority: Low</div>
+                    <div class="tasks-container" data-status="@stage.Name" style="min-height: 100px;">
+                        @foreach (var task in stageTasks)
+                        {
+                            <div class="card-task p-3 mb-3 bg-white shadow-sm rounded position-relative"
+                                 data-task-id="@task.ObjectiveId" draggable="true">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-0 task-title">@task.Title</h6>
+                                    <span class="badge @GetPriorityBadgeClass(task.Priority)">
+                                        @GetPriorityText(task.Priority)
+                                    </span>
+                                </div>
+
+                                @if (!string.IsNullOrEmpty(task.Description))
+                                {
+                                    <p class="small text-muted mb-2 task-description">@task.Description</p>
+                                }
+
+                                <div class="task-meta">
+                                    @if (!string.IsNullOrEmpty(task.AssignedToEmail))
+                                    {
+                                        <div class="small mb-1">
+                                            <i class="fa fa-user me-1"></i>
+                                            <span class="assignee">@task.AssignedToEmail</span>
+                                        </div>
+                                    }
+
+                                    @if (task.DueDate.HasValue)
+                                    {
+                                        var dueClass = task.DueDate < DateOnly.FromDateTime(DateTime.Today) ? "text-danger" : "text-muted";
+                                        <div class="small @dueClass">
+                                            <i class="fa fa-calendar me-1"></i>
+                                            @task.DueDate.Value.ToString("dd/MM/yyyy")
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="task-actions mt-2 d-flex gap-1">
+                                    <button class="btn btn-sm btn-outline-primary flex-fill"
+                                            onclick="viewTaskDetails(@task.ObjectiveId)">
+                                        <i class="fa fa-eye"></i> Chi tiết
+                                    </button>
+                                </div>
+                            </div>
+                        }
+
+                        @if (stageTasks.Count == 0)
+                        {
+                            <div class="text-center text-muted py-4">
+                                <i class="fa fa-inbox fa-2x mb-2"></i>
+                                <div>Không có task</div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="kanban-column">
-                    <strong>In Progress</strong>
-                    <div class="card-task p-2 mt-2 bg-white shadow-sm rounded">
-                        <strong>API Auth</strong>
-                        <div class="small text-muted">Assignee: NA | Priority: Medium</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="kanban-column">
-                    <strong>Review</strong>
-                    <div class="card-task p-2 mt-2 bg-white shadow-sm rounded">
-                        <strong>Unit Test</strong>
-                        <div class="small text-muted">Assignee: TP | Priority: Normal</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="kanban-column">
-                    <strong>Done</strong>
-                    <div class="card-task p-2 mt-2 bg-white shadow-sm rounded">
-                        <strong>Setup DB</strong>
-                        <div class="small text-muted">Completed by: TT</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Thành viên -->
-    <div class="tab-pane fade tab-content-section" id="members">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5>Danh sách thành viên</h5>
-            <button class="btn btn-outline-primary btn-sm"><i class="fa fa-user-plus"></i> Thêm thành viên</button>
-        </div>
-        <table class="table table-hover align-middle">
-            <thead><tr><th>Thành viên</th><th>Vai trò</th><th>Ngày tham gia</th><th>Thao tác</th></tr></thead>
-            <tbody>
-                <tr><td><div class="d-flex align-items-center"><div class="me-2 avatar">TB</div>Trần Bình</div></td><td><span class="badge badge-role">Project Manager</span></td><td>2025-09-15</td><td><button class="btn btn-sm btn-outline-danger"><i class="fa fa-user-minus"></i></button></td></tr>
-                <tr><td><div class="d-flex align-items-center"><div class="me-2 avatar">NA</div>Nguyễn Anh</div></td><td><span class="badge bg-light text-dark">Developer</span></td><td>2025-09-16</td><td><button class="btn btn-sm btn-outline-danger"><i class="fa fa-user-minus"></i></button></td></tr>
-            </tbody>
-        </table>
-    </div>
-
-
-    <!-- Chat nhóm -->
-    <div class="tab-pane fade tab-content-section" id="chat">
-        <h5>Chat nhóm - Website bán hàng</h5>
-        <div class="chat-box mb-3">
-            <div class="d-flex mb-2">
-                <div class="me-2 avatar">TB</div>
-                <div><strong>Trần B</strong> <div class="small text-muted">10:20</div><div>Push branch feature/login</div></div>
-            </div>
-            <div class="d-flex mb-2 justify-content-end">
-                <div class="text-end"><strong>Nguyễn A</strong> <div class="small text-muted">10:25</div><div>Ok đã nhận</div></div>
-                <div class="ms-2 avatar">NA</div>
-            </div>
-        </div>
-        <div class="d-flex">
-            <input class="form-control form-control-sm me-2" placeholder="Nhập tin nhắn...">
-            <button class="btn btn-primary btn-sm">Gửi</button>
-        </div>
-    </div>
-
-
-    <!-- Lịch & tiến độ -->
-    <div class="tab-pane fade tab-content-section" id="timeline">
-        <h5>Lịch và Tiến độ</h5>
-        <p>Hiển thị lịch deadline, sprint, milestone dưới dạng Gantt hoặc Calendar (chưa hiển thị trong mockup).</p>
-        <div class="alert alert-info">Tính năng đang được phát triển...</div>
+        }
     </div>
 </div>
+
+<!-- Create Task Modal -->
+<div class="modal fade" id="createTaskModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tạo Task Mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createTaskForm">
+                <div class="modal-body">
+                    <input type="hidden" name="ProjectId" value="@Model.Project.ProjectId" />
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label class="form-label">Tiêu đề <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="Title" required maxlength="255">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Độ ưu tiên</label>
+                                <select class="form-select" name="Priority">
+                                    <option value="Low">Thấp</option>
+                                    <option value="Medium" selected>Trung bình</option>
+                                    <option value="High">Cao</option>
+                                    <option value="Critical">Khẩn cấp</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả</label>
+                        <textarea class="form-control" name="Description" rows="3" maxlength="1000"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Trạng thái</label>
+                                <select class="form-select" name="Status">
+                                    @foreach (var stage in Model.Stages)
+                                    {
+                                        <option value="@stage.Name">@stage.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Người được giao</label>
+                                <select class="form-select" name="AssignedToEmail">
+                                    <option value="">-- Chọn người --</option>
+                                    @foreach (var member in Model.ProjectMembers)
+                                    {
+                                        <option value="@member.UserEmail">@member.UserEmail</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Ngày bắt đầu</label>
+                                <input type="date" class="form-control" name="StartDate">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Hạn hoàn thành</label>
+                                <input type="date" class="form-control" name="DueDate">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-plus"></i> Tạo Task
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Task Details Modal -->
+<div class="modal fade" id="taskDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chi tiết Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="taskDetailsContent">
+                <!-- Content will be loaded via AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .kanban-column {
+            min-height: 70vh;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .card-task {
+            cursor: grab;
+            transition: all 0.3s ease;
+            border-left: 4px solid #007bff;
+        }
+
+            .card-task:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+            }
+
+            .card-task.dragging {
+                opacity: 0.5;
+                cursor: grabbing;
+            }
+
+        .task-title {
+            line-height: 1.3;
+        }
+
+        .task-description {
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .drop-zone {
+            background-color: #e9ecef;
+            border: 2px dashed #dee2e6;
+            border-radius: 0.375rem;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // Drag and Drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDragAndDrop();
+        });
+
+        function initializeDragAndDrop() {
+            const tasks = document.querySelectorAll('.card-task');
+            const columns = document.querySelectorAll('.tasks-container');
+
+            tasks.forEach(task => {
+                task.addEventListener('dragstart', handleDragStart);
+                task.addEventListener('dragend', handleDragEnd);
+            });
+
+            columns.forEach(column => {
+                column.addEventListener('dragover', handleDragOver);
+                column.addEventListener('dragenter', handleDragEnter);
+                column.addEventListener('dragleave', handleDragLeave);
+                column.addEventListener('drop', handleDrop);
+            });
+        }
+
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.dataset.taskId);
+            e.target.classList.add('dragging');
+            e.target.style.opacity = '0.5';
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            e.target.style.opacity = '1';
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            e.target.closest('.tasks-container').classList.add('drop-zone');
+        }
+
+        function handleDragLeave(e) {
+            e.target.closest('.tasks-container').classList.remove('drop-zone');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const tasksContainer = e.target.closest('.tasks-container');
+            tasksContainer.classList.remove('drop-zone');
+
+            const taskId = e.dataTransfer.getData('text/plain');
+            const newStatus = tasksContainer.dataset.status;
+
+            // Di chuyển task trong DOM
+            const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+            tasksContainer.appendChild(taskElement);
+
+            // Cập nhật status qua API
+            updateTaskStatus(taskId, newStatus);
+        }
+
+        function updateTaskStatus(taskId, newStatus) {
+            const requestData = {
+                taskId: parseInt(taskId),
+                newStatus: newStatus
+            };
+
+            fetch('@Url.Action("UpdateTaskStatus", "Kanban")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    showToast('Cập nhật thất bại', 'error');
+                    // Reload để reset trạng thái
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Có lỗi xảy ra', 'error');
+                location.reload();
+            });
+        }
+
+        // Create Task
+        document.getElementById('createTaskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+
+            // Convert date fields
+            if (data.StartDate === '') data.StartDate = null;
+            if (data.DueDate === '') data.DueDate = null;
+
+            fetch('@Url.Action("CreateTask", "Kanban")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Tạo task thành công', 'success');
+                    $('#createTaskModal').modal('hide');
+                    location.reload();
+                } else {
+                    showToast(data.message || 'Tạo task thất bại', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Có lỗi xảy ra', 'error');
+            });
+        });
+
+        function viewTaskDetails(taskId) {
+            fetch('@Url.Action("GetTaskDetails", "Kanban")?taskId=' + taskId)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('taskDetailsContent').innerHTML = html;
+                    $('#taskDetailsModal').modal('show');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Không thể tải chi tiết task', 'error');
+                });
+        }
+
+        function showToast(message, type = 'info') {
+            // Implement toast notification
+            alert(message); // Temporary simple alert
+        }
+    </script>
+}
+
+@functions {
+    public string GetPriorityBadgeClass(string priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "high" => "bg-warning",
+            "medium" => "bg-info",
+            "low" => "bg-success",
+            "critical" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    public string GetPriorityText(string priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "high" => "Cao",
+            "medium" => "TB",
+            "low" => "Thấp",
+            "critical" => "Khẩn",
+            _ => priority
+        };
+    }
+} *@

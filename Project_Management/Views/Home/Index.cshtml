@@ -1,8 +1,9 @@
 ﻿@{
     ViewBag.Title = "Trang chủ";
     Layout = "~/Views/Shared/_Home.cshtml";
+    var currentUserEmail = ViewBag.CurrentUserEmail as string;
 }
-@model List<Project_Management.Models.Project>
+@model IEnumerable<Project_Management.Models.Project>
 
 <!-- Top bar -->
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -27,11 +28,11 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="text-muted small">Dự án</div>
-                    <h4>6</h4>
+                    <h4>@Model.Count()</h4>
                 </div>
                 <div><i class="fa fa-folder fa-2x text-primary"></i></div>
             </div>
-            <div class="mt-2 small text-muted">2 dự án trễ hạn</div>
+            <div class="mt-2 small text-muted">Dự án của bản thân</div>
         </div>
     </div>
     <div class="col-md-3">
@@ -39,11 +40,11 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="text-muted small">Công việc</div>
-                    <h4>42</h4>
+                    <h4>@ViewBag.TotalTasks.Count</h4>
                 </div>
                 <div><i class="fa fa-tasks fa-2x text-warning"></i></div>
             </div>
-            <div class="mt-2 small text-muted">6 công việc đang tiến hành</div>
+            <div class="mt-2 small text-muted">Công việc đang đảm nhiệm</div>
         </div>
     </div>
     <div class="col-md-3">
@@ -51,11 +52,11 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="text-muted small">Nhân sự</div>
-                    <h4>18</h4>
+                    <h4>@ViewBag.TotalMembers.Count</h4>
                 </div>
                 <div><i class="fa fa-users fa-2x text-success"></i></div>
             </div>
-            <div class="mt-2 small text-muted">3 quản lý dự án</div>
+            <div class="mt-2 small text-muted">Tổng số lượng người dùng</div>
         </div>
     </div>
     <div class="col-md-3">
@@ -63,11 +64,11 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="text-muted small">Tiến độ trung bình</div>
-                    <h4>68%</h4>
+                    <h4>0%</h4>
                 </div>
                 <div><i class="fa fa-chart-line fa-2x text-info"></i></div>
             </div>
-            <div class="mt-2 small text-muted">Tăng 5% so tuần trước</div>
+            <div class="mt-2 small text-muted">Chức năng hiện chưa có</div>
         </div>
     </div>
 </div>
@@ -81,18 +82,21 @@
                 <small class="text-muted">Sắp xếp: Mới nhất</small>
             </div>
             <ul class="list-group list-group-flush">
-                @if (Model != null && Model.Count > 0)
+                @if (Model != null && Model.Count() > 0)
                 {
                     @foreach (var project in Model)
                     {
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <!-- Cột thông tin -->
                             <div>
-                                <strong>@project.Name</strong><br />
+                                <strong>@project.Name</strong>
+                                <span class="badge bg-light text-dark">Từ ngày: @project.StartDate - Đến: @project.EndDate</span>
+                                
+                                <br />
                                 <small class="text-muted">
                                     PM: @project.CreatedByEmail |
                                     @project.Methodology |
-                                    @project.Objectives.Count tasks
+                                    @project.Objectives.Count Công việc
                                 </small>
                             </div>
 
@@ -102,20 +106,25 @@
                                 <div class="mt-2 d-flex gap-1 justify-content-end">
                                     <!-- Mở -->
                                     <a class="btn btn-sm btn-outline-primary"
-                                       asp-controller="Project"
+
                                        asp-action="Detail"
                                        asp-route-id="@project.ProjectId">Mở</a>
 
                                     <!-- Sửa -->
                                     <a class="btn btn-sm btn-outline-warning"
-                                       asp-controller="Project"
                                        asp-action="Update"
-                                       asp-route-id="@project.ProjectId">Sửa</a>
+                                       asp-route-id="@project.ProjectId">Cập nhật</a>
+
+                                    <!-- Kanban -->
+                                    <a asp-action="Kanban" 
+                                       asp-controller="Objective" 
+                                       asp-route-projectId="@project.ProjectId" 
+                                       class="btn btn-sm btn-outline-secondary">Bảng Kanban</a>
+
 
                                     <!-- Xóa -->
-                                    <form asp-controller="Project"
-                                          asp-action="Delete"
-                                          asp-route-id="@project.ProjectId"
+                                    <form asp-action="Delete"
+                                          asp-route-id="@project.ProjectId" asp-route-email="@currentUserEmail"
                                           method="post"
                                           onsubmit="return confirm('Bạn có chắc muốn xóa dự án này không?');"
                                           class="d-inline">
@@ -137,7 +146,7 @@
         </div>
     </div>
 
-    <div class="col-lg-12">
+    @* <div class="col-lg-12">
         <div class="card p-3">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5>Preview Kanban - Project: Website bán hàng</h5>
@@ -197,11 +206,11 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> *@
 </div>
 
 <!-- Chat & Reports Row -->
-<div class="row mt-4">
+@* <div class="row mt-4">
     <div class="col-md-6">
         <div class="card p-3">
             <h5>Chat - Project: Website bán hàng</h5>
@@ -243,13 +252,13 @@
             <div class="mt-2 small text-muted">Bạn có thể lọc theo Project / Assignee / Priority</div>
         </div>
     </div>
-</div>
+</div> *@
 
 <!-- Create Project Modal -->
 <div class="modal fade" id="createProjectModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-success text-white">
                 <h5 class="modal-title">Tạo dự án mới</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
