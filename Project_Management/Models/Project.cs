@@ -44,6 +44,8 @@ public partial class Project
 
     public bool IsDateValid()
     {
-        return StartDate <= EndDate;
+        if (StartDate != null || EndDate != null)
+            return StartDate <= EndDate;
+        return false;
     }
 }

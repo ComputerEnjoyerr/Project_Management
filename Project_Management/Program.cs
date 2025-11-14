@@ -25,10 +25,10 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IProjectService ,ProjectService>();
 builder.Services.AddScoped<IUserService ,UserService>();
 builder.Services.AddScoped<IProjectMemberService, ProjectMemberService>();
-//builder.Services.AddScoped<IDashboardService, DashboardService>();
-//builder.Services.AddScoped<IKanbanService, KanbanService>();
 builder.Services.AddScoped<IMyTaskService, MyTaskService>();
 builder.Services.AddScoped<IObjectiveService, ObjectiveService>();
+builder.Services.AddScoped<IChatRoomService, ChatRoomService>();
+builder.Services.AddSignalR();
 var app = builder.Build();
 
 // Tạo admin mặc định lúc chạy lần đậu tiên
@@ -67,6 +67,7 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.MapHub<ChatHub>("/chatHub");
 app.UseRouting();
 
 app.UseAuthorization();

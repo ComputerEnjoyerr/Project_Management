@@ -19,3 +19,9 @@ public partial class Message
 
     //public virtual ApplicationUser Sender { get; set; } = null!;
 }
+
+public class SendMessageDto
+{
+    public int ChatRoomId { get; set; }
+    public string Content { get; set; } = null!;
+}

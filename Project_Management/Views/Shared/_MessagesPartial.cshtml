@@ -1,0 +1,27 @@
+﻿@model IEnumerable<Message>
+@{
+    Layout = null;
+    var currentUser = ViewBag.UserEmail as string;
+}
+@foreach(var m in Model)
+{
+    if(m.SenderEmail == currentUser) {
+        <div class="text-end mb-2">
+            <div>
+                <span class="small text-muted">@m.SentAt?.ToString("HH:mm") |</span>
+                <strong>Bạn</strong>
+            </div>
+            <div>@m.Content</div>
+        </div>
+    } else {
+        <div class="d-flex mb-2">
+            <div class="me-2 avatar">@m.SenderEmail.Substring(0,2).ToUpper()</div>
+            <div>
+                <strong>@m.SenderEmail</strong>
+                <span class="small text-muted">| @m.SentAt?.ToString("HH:mm")</span>
+                <div>@m.Content</div>
+            </div>
+        </div>
+    }
+}
+
