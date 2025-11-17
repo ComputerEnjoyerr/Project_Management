@@ -66,4 +66,31 @@ public class ChatRoomController : Controller
         return Ok();
     }
 
+    // POST: Tạo phòng chat
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] ChatRoom model)
+    {
+        if (string.IsNullOrWhiteSpace(model.Name))
+            return BadRequest("Tên phòng không được rỗng");
+
+        var result = await _service.CreateAsync(model);
+        return Ok(result);
+    }
+
+    // PUT: Sửa tên phòng
+    [HttpPut]
+    public async Task<IActionResult> UpdateName([FromBody] UpdateChatRoomNameRequest req)
+    {
+        bool ok = await _service.UpdateNameAsync(req.ChatRoomId, req.NewName);
+        return ok ? Ok() : NotFound();
+    }
+
+    // DELETE: Xóa phòng
+    [HttpDelete]
+    public async Task<IActionResult> Delete(int id)
+    {
+        bool ok = await _service.DeleteAsync(id);
+        return ok ? Ok() : NotFound();
+    }
+
 }

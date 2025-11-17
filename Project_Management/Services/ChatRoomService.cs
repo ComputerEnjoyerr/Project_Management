@@ -16,6 +16,11 @@ namespace Project_Management.Services
 
         Task<List<Message>> GetMessagesAsync(int chatRoomId);
         Task AddMessageAsync(Message msg);
+
+        Task<IEnumerable<ChatRoom>> GetByProjectIdAsync(int projectId);
+        Task<ChatRoom> CreateAsync(ChatRoom room);
+        Task<bool> UpdateNameAsync(int id, string newName);
+        Task<bool> DeleteAsync(int id);
     }
 
 
@@ -62,6 +67,41 @@ namespace Project_Management.Services
             msg.SentAt = DateTime.Now;
             _context.Messages.Add(msg);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<ChatRoom>> GetByProjectIdAsync(int projectId)
+        {
+            return await _context.ChatRooms
+                .Where(x => x.ProjectId == projectId)
+                .OrderBy(x => x.Name)
+                .ToListAsync();
+        }
+
+        public async Task<ChatRoom> CreateAsync(ChatRoom room)
+        {
+            _context.ChatRooms.Add(room);
+            await _context.SaveChangesAsync();
+            return room;
+        }
+
+        public async Task<bool> UpdateNameAsync(int id, string newName)
+        {
+            var room = await _context.ChatRooms.FindAsync(id);
+            if (room == null) return false;
+
+            room.Name = newName;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var room = await _context.ChatRooms.FindAsync(id);
+            if (room == null) return false;
+
+            _context.ChatRooms.Remove(room);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
     // Chức 
