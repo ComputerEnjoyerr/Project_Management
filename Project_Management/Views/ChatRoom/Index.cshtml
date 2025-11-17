@@ -6,70 +6,25 @@
     Layout = null;
 }
 @model IEnumerable<ChatRoom>
-@foreach (var room in Model)
+
+@if (!Model.Any())
 {
-    <div class="chat-room-item p-2 hover-bg"
-         onclick="selectRoom(@room.ChatRoomId, '@room.Name', this)">
-        <strong>@room.Name</strong>
-    </div>
+    <div class="text-muted small text-center mt-3">Không có phòng chat</div>
 }
-  
-<style>
-    .hover-bg:hover {
-        background-color: #f8f9fa;
-        cursor: pointer;
-        border-radius: 8px;
+else
+{
+    foreach (var room in Model)
+    {
+        <div class="chat-room-item p-2 px-3 hover-bg d-flex justify-content-between align-items-center"
+             onclick="selectRoom(@room.ChatRoomId, '@room.Name', this)">
+            <div class="truncate">
+                <strong>@room.Name</strong>
+            </div>
+
+            <div class="d-flex gap-2">
+                <i class="fa fa-edit text-primary small" onclick="editChatRoom(event, @room.ChatRoomId, '@room.Name')"></i>
+                <i class="fa fa-trash text-danger small" onclick="deleteChatRoom(event, @room.ChatRoomId)"></i>
+            </div>
+        </div>
     }
-
-    .active-item {
-        background-color: #e3f2fd !important;
-        border-radius: 8px;
-        border-left: 4px solid #0d6efd;
-    }
-
-    .truncate {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 80%;
-    }
-
-    #messageBox {
-        scroll-behavior: smooth;
-        background: radial-gradient(circle at 20% 20%, rgba(120, 119, 198, 0.03) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 119, 198, 0.03) 0%, transparent 50%);
-    }
-
-    .message-item {
-        transition: all 0.2s ease;
-    }
-
-        .message-item:hover {
-            transform: translateX(2px);
-        }
-
-    /* Custom scrollbar */
-    #projectList::-webkit-scrollbar,
-    #chatRoomList::-webkit-scrollbar,
-    #messageBox::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    #projectList::-webkit-scrollbar-track,
-    #chatRoomList::-webkit-scrollbar-track,
-    #messageBox::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
-
-    #projectList::-webkit-scrollbar-thumb,
-    #chatRoomList::-webkit-scrollbar-thumb,
-    #messageBox::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
-        border-radius: 3px;
-    }
-
-        #projectList::-webkit-scrollbar-thumb:hover,
-        #chatRoomList::-webkit-scrollbar-thumb:hover,
-        #messageBox::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-</style>
+}

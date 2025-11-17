@@ -110,16 +110,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="createChatRoomForm">
-                    <div class="mb-3">
-                        <label class="form-label">Tên phòng chat</label>
-                        <input type="text" class="form-control" id="chatRoomName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mô tả (tuỳ chọn)</label>
-                        <textarea class="form-control" id="chatRoomDescription" rows="2" placeholder="Mô tả về phòng chat này..."></textarea>
-                    </div>
-                </form>
+                @await Html.PartialAsync("_CreateChatRoomPartial", new ChatRoom())
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
@@ -181,27 +172,26 @@
             return;
         }
         // Reset form
-        document.getElementById('chatRoomName').value = '';
-        document.getElementById('chatRoomDescription').value = '';
+        document.getElementById('ChatRoom_ProjectId').value = selectedProject;
         new bootstrap.Modal(document.getElementById('createChatRoomModal')).show();
     }
 
-    function createChatRoom() {
-        const name = document.getElementById('chatRoomName').value;
-        const description = document.getElementById('chatRoomDescription').value;
+    // function createChatRoom() {
+    //     const name = document.getElementById('chatRoomName').value;
+    //     const description = document.getElementById('chatRoomDescription').value;
 
-        if (!name.trim()) {
-            alert('Vui lòng nhập tên phòng chat');
-            return;
-        }
+    //     if (!name.trim()) {
+    //         alert('Vui lòng nhập tên phòng chat');
+    //         return;
+    //     }
 
-        // TODO: Triển khai API tạo phòng chat sau
-        console.log('Tạo phòng chat:', { projectId: selectedProject, name, description });
-        alert('Tính năng tạo phòng chat sẽ được triển khai sau');
+    //     TODO: Triển khai API tạo phòng chat sau
+    //     console.log('Tạo phòng chat:', { projectId: selectedProject, name, description });
+    //     alert('Tính năng tạo phòng chat sẽ được triển khai sau');
 
-        // Tạm thời đóng modal
-        bootstrap.Modal.getInstance(document.getElementById('createChatRoomModal')).hide();
-    }
+    //     Tạm thời đóng modal
+    //     bootstrap.Modal.getInstance(document.getElementById('createChatRoomModal')).hide();
+    // }
 
     // ----------------------------------------------
     // MESSAGE MANAGEMENT (GIỮ NGUYÊN)
@@ -274,6 +264,68 @@
             item.style.display = roomName.includes(searchTerm) ? 'block' : 'none';
         });
     });
+
+    // ---------------------------
+    // CREATE ROOM
+    // ---------------------------
+    function createChatRoom() {
+        const name = document.getElementById("chatRoomName").value;
+        const projectId = selectedProject;
+
+        if (!name.trim()) {
+            alert("Tên phòng không được để trống");
+            return;
+        }
+
+        fetch("/ChatRoom/Create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ projectId, name })
+        })
+        .then(res => res.ok ? res.json() : Promise.reject())
+        .then(() => {
+            bootstrap.Modal.getInstance(document.getElementById("createChatRoomModal")).hide();
+            loadChatRooms();
+        });
+    }
+
+    function loadChatRooms() {
+        fetch(`/ChatRoom/Index?projectId=${selectedProject}`)
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById("chatRoomList").innerHTML = html;
+            });
+    }
+
+    // ---------------------------
+    // UPDATE ROOM NAME
+    // ---------------------------
+    function editChatRoom(event, roomId, oldName) {
+        event.stopPropagation();
+
+        const newName = prompt("Nhập tên mới:", oldName);
+        if (!newName || !newName.trim()) return;
+
+        fetch("/ChatRoom/UpdateName", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chatRoomId: roomId, newName })
+        })
+        .then(res => res.ok ? loadChatRooms() : alert("Không tìm thấy phòng"));
+    }
+
+    // ---------------------------
+    // DELETE ROOM
+    // ---------------------------
+    function deleteChatRoom(event, roomId) {
+        event.stopPropagation();
+
+        if (!confirm("Bạn có chắc muốn xóa phòng chat này?")) return;
+
+        fetch(`/ChatRoom/Delete?id=${roomId}`, { method: "DELETE" })
+            .then(res => res.ok ? loadChatRooms() : alert("Không tìm thấy phòng"));
+    }
+
 </script>
 
 <style>

@@ -123,13 +123,6 @@
                                        asp-route-projectId="@project.ProjectId" 
                                        class="btn btn-sm btn-outline-secondary">Bảng Kanban</a>
 
-                                    <!-- Chat -->
-                                    <a asp-action="Index" 
-                                       asp-controller="ChatRoom" 
-                                       asp-route-projectId="@project.ProjectId" 
-                                       class="btn btn-sm btn-outline-secondary">Chat</a>
-
-
                                     <!-- Xóa -->
                                     <form asp-action="Delete"
                                           asp-route-id="@project.ProjectId" asp-route-email="@currentUserEmail"
