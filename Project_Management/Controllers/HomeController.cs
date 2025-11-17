@@ -45,6 +45,17 @@ namespace Project_Management.Controllers
             return View(userProjects);
         }
 
+        public IActionResult ChatRooms()
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            if (userEmail == null)
+            {
+                return Redirect("~/Identity/Account/Login"); // Identity tự động bỏ qua Pages
+            }
+            var projectList = projectService.GetByUser(userEmail);
+            return View(projectList);
+        }
+
         // Tạo dự án mới
         [HttpPost]
         public IActionResult CreateProject(Project project)

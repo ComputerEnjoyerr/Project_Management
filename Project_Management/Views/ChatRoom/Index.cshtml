@@ -2,117 +2,74 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
-    ViewBag.Title = "Trang chủ";
-    Layout = "~/Views/Shared/_Home.cshtml";
+    var project = ViewBag.Project as Project;
+    Layout = null;
 }
-<!-- Chat Rooms List -->
-<div class="col-3 chat-sidebar">
-    <div class="p-3 d-flex justify-content-between align-items-center border-bottom">
-        <h6 class="mb-0">Phòng chat</h6>
-        <button class="btn btn-sm btn-outline-primary" onclick="renameGroup()"><i class="fa fa-pen"></i></button>
+@model IEnumerable<ChatRoom>
+@foreach (var room in Model)
+{
+    <div class="chat-room-item p-2 hover-bg"
+         onclick="selectRoom(@room.ChatRoomId, '@room.Name', this)">
+        <strong>@room.Name</strong>
     </div>
-    <div id="chatRooms">
-        <div class="chat-room active" onclick="selectRoom(1)">
-            <div><strong>Website bán hàng</strong></div>
-            <div class="small text-muted">3 tin nhắn mới</div>
-        </div>
-        <div class="chat-room" onclick="selectRoom(2)">
-            <div><strong>Ứng dụng nội bộ</strong></div>
-            <div class="small text-muted">2 người đang online</div>
-        </div>
-        <div class="chat-room" onclick="selectRoom(3)">
-            <div><strong>Quản lý kho</strong></div>
-            <div class="small text-muted">Không có tin nhắn mới</div>
-        </div>
-        <div class="chat-room" onclick="selectRoom(4)">
-            <div><strong>Marketing Platform</strong></div>
-            <div class="small text-muted">1 tin nhắn mới</div>
-        </div>
-        <div class="chat-room" onclick="selectRoom(5)">
-            <div><strong>Phân tích dữ liệu</strong></div>
-            <div class="small text-muted">4 người đang online</div>
-        </div>
-    </div>
-</div>
-<!-- Chat Content -->
-<div class="col-6 p-3">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 id="roomTitle">Website bán hàng</h5>
-        <small class="text-muted">5 thành viên</small>
-    </div>
-
-    <!-- Chat Box -->
-    <div class="chat-box mb-3" id="chatBox">
-        <div class="d-flex mb-2">
-            <div class="me-2 avatar">TB</div>
-            <div>
-                <strong>Trần Bình</strong> <div class="small text-muted">10:20</div>
-                <div>Đã push branch feature/login</div>
-            </div>
-        </div>
-        <div class="d-flex mb-2 justify-content-end">
-            <div class="text-end">
-                <strong>Nguyễn A</strong> <div class="small text-muted">10:25</div>
-                <div>Oke, tôi review sau.</div>
-            </div>
-            <div class="ms-2 avatar">NA</div>
-        </div>
-    </div>
-
-    <!-- Message Input -->
-    <div class="message-input d-flex align-items-center gap-2">
-        <input id="messageInput" class="form-control form-control-sm" placeholder="Nhập tin nhắn...">
-        <button class="btn btn-primary btn-sm" onclick="sendMessage()">Gửi</button>
-    </div>
-</div>
-
-<!-- Members List -->
-<div class="col-3 p-3">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <h6>Thành viên</h6>
-        <button class="btn btn-sm btn-outline-secondary" onclick="refreshMembers()"><i class="fa fa-sync"></i></button>
-    </div>
-    <div class="member-list" id="memberList">
-        <div class="d-flex align-items-center mb-2"><div class="me-2 avatar">TB</div> <div><strong>Trần Bình</strong><div class="small text-muted">Project Manager</div></div></div>
-        <div class="d-flex align-items-center mb-2"><div class="me-2 avatar">NA</div> <div><strong>Nguyễn Anh</strong><div class="small text-muted">Developer</div></div></div>
-        <div class="d-flex align-items-center mb-2"><div class="me-2 avatar">TP</div> <div><strong>Trần Phú</strong><div class="small text-muted">Tester</div></div></div>
-        <div class="d-flex align-items-center mb-2"><div class="me-2 avatar">HH</div> <div><strong>Hoàng Huy</strong><div class="small text-muted">Designer</div></div></div>
-    </div>
-</div>
-
-<script>
-     function selectRoom(id) {
-    // Gỡ class active khỏi tất cả các phòng chat
-    document.querySelectorAll('.chat-room').forEach(el => el.classList.remove('active'));
-    // Thêm lại class active cho phòng được chọn
-    const selected = document.querySelector(`#chatRooms .chat-room:nth-child(${id})`);
-    if (selected) selected.classList.add('active');
-    // Cập nhật nội dung
-    const titles = ['Website bán hàng', 'Ứng dụng nội bộ', 'Quản lý kho', 'Marketing Platform', 'Phân tích dữ liệu'];
-    const title = titles[id - 1] || 'Nhóm không xác định';
-    document.getElementById('roomTitle').innerText = title;
-    document.getElementById('chatBox').innerHTML = `<div class='text-center text-muted'>Đang tải tin nhắn của nhóm ${title}...</div>`;
+}
+  
+<style>
+    .hover-bg:hover {
+        background-color: #f8f9fa;
+        cursor: pointer;
+        border-radius: 8px;
     }
 
-    function renameGroup(){
-      const active = document.querySelector('.chat-room.active strong');
-      const newName = prompt('Nhập tên mới cho nhóm chat:', active.innerText);
-      if(newName){ active.innerText = newName; document.getElementById('roomTitle').innerText = newName; }
+    .active-item {
+        background-color: #e3f2fd !important;
+        border-radius: 8px;
+        border-left: 4px solid #0d6efd;
     }
 
-    function sendMessage(){
-      const input = document.getElementById('messageInput');
-      if(!input.value.trim()) return;
-      const box = document.getElementById('chatBox');
-      const msg = document.createElement('div');
-      msg.className = 'd-flex mb-2 justify-content-end';
-      msg.innerHTML = `<div class=\"text-end\"><strong>Bạn</strong><div class=\"small text-muted\">Vừa gửi</div><div>${input.value}</div></div><div class=\"ms-2 avatar\">NA</div>`;
-      box.appendChild(msg);
-      box.scrollTop = box.scrollHeight;
-      input.value = '';
+    .truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 80%;
     }
 
-    function refreshMembers(){
-      alert('Tải lại danh sách thành viên (mock)');
+    #messageBox {
+        scroll-behavior: smooth;
+        background: radial-gradient(circle at 20% 20%, rgba(120, 119, 198, 0.03) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 119, 198, 0.03) 0%, transparent 50%);
     }
-</script>
+
+    .message-item {
+        transition: all 0.2s ease;
+    }
+
+        .message-item:hover {
+            transform: translateX(2px);
+        }
+
+    /* Custom scrollbar */
+    #projectList::-webkit-scrollbar,
+    #chatRoomList::-webkit-scrollbar,
+    #messageBox::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    #projectList::-webkit-scrollbar-track,
+    #chatRoomList::-webkit-scrollbar-track,
+    #messageBox::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    #projectList::-webkit-scrollbar-thumb,
+    #chatRoomList::-webkit-scrollbar-thumb,
+    #messageBox::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+
+        #projectList::-webkit-scrollbar-thumb:hover,
+        #chatRoomList::-webkit-scrollbar-thumb:hover,
+        #messageBox::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+</style>
