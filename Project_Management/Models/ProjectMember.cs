@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace Project_Management.Models;
+
+public partial class ProjectMember
+{
+    public int ProjectMemberId { get; set; }
+
+    public int ProjectId { get; set; }
+
+    public string? UserEmail { get; set; }
+
+    public string? Role { get; set; }
+
+    public DateTime? JoinedAt { get; set; }
+
+    public virtual Project Project { get; set; } = null!;
+
+    //public virtual ApplicationUser User { get; set; } = null!;
+}

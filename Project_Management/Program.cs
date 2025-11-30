@@ -1,6 +1,8 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Project_Management.Data;
+using Project_Management.Models;
+using Project_Management.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,14 +10,48 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<ProjectManagementDbContext>(options =>
+    options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+// Thêm identity vào dự án
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders()
+    .AddDefaultUI();
 builder.Services.AddControllersWithViews();
 
+// Inject các serivce
+builder.Services.AddScoped<IProjectService ,ProjectService>();
+builder.Services.AddScoped<IUserService ,UserService>();
+builder.Services.AddScoped<IProjectMemberService, ProjectMemberService>();
+builder.Services.AddScoped<IMyTaskService, MyTaskService>();
+builder.Services.AddScoped<IObjectiveService, ObjectiveService>();
+builder.Services.AddScoped<IChatRoomService, ChatRoomService>();
+builder.Services.AddSignalR();
 var app = builder.Build();
 
+// Tạo admin mặc định lúc chạy lần đậu tiên
+using (var scope = app.Services.CreateScope())
+{
+    var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+    // Tạo roles nếu chưa có
+    string[] roles = new[] { "Admin", "User" };
+    foreach (var r in roles)
+        if (!await roleMgr.RoleExistsAsync(r)) await roleMgr.CreateAsync(new IdentityRole(r));
+
+    // Tạo admin user nếu chưa có
+    var adminEmail = "admin@local.test";
+    var admin = await userMgr.FindByEmailAsync(adminEmail);
+    if (admin == null)
+    {
+        admin = new ApplicationUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
+        await userMgr.CreateAsync(admin, "Admin@123"); // mật khẩu phải đủ mạnh theo policy
+        await userMgr.AddToRoleAsync(admin, "Admin");
+    }
+}
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -31,6 +67,7 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.MapHub<ChatHub>("/chatHub");
 app.UseRouting();
 
 app.UseAuthorization();

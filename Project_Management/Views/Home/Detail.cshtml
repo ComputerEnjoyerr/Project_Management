@@ -1,0 +1,115 @@
+﻿@model Project_Management.Models.Project
+
+@{
+    ViewData["Title"] = "Project Detail";
+    Layout = "~/Views/Shared/_Home.cshtml";
+    var isOwner = ViewBag.IsOwner as bool? ?? false;
+    var currentUser = ViewBag.CurrentUser as string;
+}
+
+<div class="container-fluid mt-5 mb-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-folder2-open me-2"></i>Chi tiết dự án</h3>
+            <div>
+                @* <a class="btn btn-sm btn-light" asp-controller="Kanban" asp-action="Index" asp-route-projectId="@Model?.ProjectId"><i class="bi bi-arrow-left"></i> Kanban</a> *@
+                <a class="btn btn-sm btn-light" asp-controller="MyTasks" asp-action="Index" asp-route-projectId="@Model?.ProjectId"><i class="bi bi-arrow-left"></i> Công việc của tôi</a>
+                @if (isOwner)
+                {
+                    <a class="btn btn-sm btn-light" asp-controller="ProjectMembers" asp-action="Index" asp-route-projectId="@Model?.ProjectId"><i class="bi bi-arrow-left"></i> Thành viên</a>
+                    <a class="btn btn-sm btn-light me-2" asp-action="Update" asp-route-id="@Model?.ProjectId"><i class="bi bi-pencil"></i> Chỉnh sửa</a>
+                }
+                <a class="btn btn-sm btn-outline-light" asp-action="Index"><i class="bi bi-arrow-left"></i> Quay lại</a>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h5 class="fw-bold text-secondary">Thông tin dự án</h5>
+                    <ul class="list-group list-group-flush">
+                       @if (Model != null)
+                       {
+                            <li class="list-group-item"><strong>Tên dự án:</strong> @Model.Name</li>
+                            <li class="list-group-item"><strong>Mô tả:</strong> @Model.Description</li>
+                            <li class="list-group-item"><strong>Phương pháp:</strong> @Model.Methodology</li>
+                            <li class="list-group-item"><strong>Trạng thái:</strong> @Model.Status</li>
+                            <li class="list-group-item"><strong>Ngày bắt đầu:</strong> @Model.StartDate?.ToString("dd/MM/yyyy")</li>
+                            <li class="list-group-item"><strong>Ngày kết thúc:</strong> @Model.EndDate?.ToString("dd/MM/yyyy")</li>
+                            <li class="list-group-item"><strong>Hoàn thành lúc:</strong> @Model.CompletedAt?.ToString("dd/MM/yyyy HH:mm")</li>
+                            <li class="list-group-item"><strong>Người tạo:</strong> @Model.CreatedByEmail</li>
+                            <li class="list-group-item"><strong>Ngày tạo:</strong> @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</li>
+                       }
+                       else
+                       {
+                            <li class="list-group-item text-muted">Không có thông tin dự án.</li>
+                       }
+                    </ul>
+                </div>
+
+                @if (Model != null)
+                {
+                    <div class="col-md-6">
+                        @await Html.PartialAsync("_CreateObjective", new Objective { ProjectId = Model.ProjectId })
+                    </div>
+                }
+            </div>
+
+            <div class="mt-5">
+                <h5 class="fw-bold text-secondary mb-3">Danh sách công việc</h5>
+                <a asp-action="Kanban" asp-controller="Objective" asp-route-projectId="@Model.ProjectId" class="btn btn-sm btn-outline-secondary mb-3">Bảng Kanban</a>
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tên công việc</th>
+                            <th>Trạng thái</th>
+                            <th>Người thực hiện</th>
+                            <th>Ngày bắt đầu</th>
+                            <th>Hạn hoàn thành</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Objectives != null && Model.Objectives.Any())
+                        {
+                            foreach (var task in Model.Objectives)
+                            {
+                                <tr>
+                                    <td>@task.Title</td>
+                                    <td>@task.Status</td>
+                                    <td>@task.AssignedToEmail</td>
+                                    <td>@task.StartDate?.ToString("dd/MM/yyyy")</td>
+                                    <td>@task.DueDate?.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        @if (task.CreatedByEmail == currentUser || task.AssignedToEmail == currentUser)
+                                        {
+                                            <a asp-action="Detail" asp-controller="Objective" asp-route-id="@task.ObjectiveId" class="btn btn-sm btn-outline-primary">Mở</a>
+                                            <a asp-action="Update" asp-controller="Objective" asp-route-id="@task.ObjectiveId" class="btn btn-sm btn-outline-warning">Cập nhật</a>
+                                            <form asp-action="Delete" asp-controller="Objective" method="post" class="d-inline"
+                                                  onsubmit="return confirm('Bạn có chắc muốn xóa công việc này không?');">
+                                                <input type="hidden" name="id" value="@task.ObjectiveId" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Chưa có công việc nào cho dự án này</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

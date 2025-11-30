@@ -1,0 +1,30 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var project = ViewBag.Project as Project;
+    Layout = null;
+}
+@model IEnumerable<ChatRoom>
+
+@if (!Model.Any())
+{
+    <div class="text-muted small text-center mt-3">Không có phòng chat</div>
+}
+else
+{
+    foreach (var room in Model)
+    {
+        <div class="chat-room-item p-2 px-3 hover-bg d-flex justify-content-between align-items-center"
+             onclick="selectRoom(@room.ChatRoomId, '@room.Name', this)">
+            <div class="truncate">
+                <strong>@room.Name</strong>
+            </div>
+
+            <div class="d-flex gap-2">
+                <i class="fa fa-edit text-primary small" onclick="editChatRoom(event, @room.ChatRoomId, '@room.Name')"></i>
+                <i class="fa fa-trash text-danger small" onclick="deleteChatRoom(event, @room.ChatRoomId)"></i>
+            </div>
+        </div>
+    }
+}

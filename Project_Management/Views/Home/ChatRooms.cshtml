@@ -1,0 +1,389 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Chat Rooms";
+    Layout = "~/Views/Shared/_Home.cshtml";
+}
+@model IEnumerable<Project>
+
+<div class="container-fluid" style="height: 100vh">
+    <div class="row h-100">
+        <!-- SIDEBAR COLLAPSIBLE - PROJECTS & CHAT ROOMS -->
+        <div class="col-3 border-end p-0 d-flex flex-column">
+            <!-- Projects Section -->
+            <div class="border-bottom">
+                <div class="p-3 d-flex justify-content-between align-items-center">
+                    <h4 class="m-0">Dự án</h4>
+                    <span class="badge bg-secondary">@Model.Count()</span>
+                </div>
+                @* <div class="px-2 pb-2">
+                    <input type="text" class="form-control form-control-sm" id="projectSearch" placeholder="Tìm dự án...">
+                </div> *@
+            </div>
+
+            <div id="projectList" class="flex-grow-1" style="overflow-y:auto; max-height: 40%;">
+                @foreach (var p in Model)
+                {
+                    <div class="project-item p-2 px-3 hover-bg d-flex justify-content-between align-items-center"
+                         onclick="selectProject(@p.ProjectId, this)">
+                        <div class="truncate">
+                            <strong>@p.Name</strong>
+                            <br>
+                            <small class="text-muted">@p.ChatRooms?.Count phòng chat</small>
+                        </div>
+                        <i class="fas fa-chevron-right text-muted small"></i>
+                    </div>
+                }
+            </div>
+
+            <!-- Chat Rooms Section -->
+            <div class="border-top flex-grow-1 d-flex flex-column">
+                <div class="p-3 d-flex border-bottom border-end justify-content-between align-items-center">
+                    <h4 class="m-0">Phòng chat</h4>
+                    <button class="btn btn-sm btn-outline-success" onclick="showCreateChatRoomModal()" id="addChatRoomBtn" disabled>
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </div>
+                <div class="px-2 pb-2">
+                    <input type="hidden" class="form-control form-control-sm" id="chatRoomSearch" placeholder="Tìm phòng chat..." disabled>
+                </div>
+                <div id="chatRoomList" class="flex-grow-1 p-2" style="overflow-y:auto;">
+                    <div class="text-muted small text-center mt-3">
+                        Chọn dự án để xem danh sách phòng chat
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN CHAT AREA -->
+        <div class="col-9 p-0 d-flex flex-column">
+            <!-- Chat Header -->
+            <div class="p-3 border-bottom bg-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 id="roomTitle" class="m-0 text-dark">Chưa chọn phòng</h5>
+                        <small id="roomInfo" class="text-muted">Chọn một phòng chat để bắt đầu trò chuyện</small>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <!-- TODO: Thêm chức năng quản lý phòng chat sau -->
+                        <!-- <button class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-cog"></i>
+                        </button> -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Area -->
+            <div id="messageBox" class="flex-grow-1 p-4" style="overflow-y: auto; background: #fafafa;">
+                <div class="text-center mt-5">
+                    <div class="mb-3">
+                        <i class="fas fa-comments fa-3x text-muted"></i>
+                    </div>
+                    <h5 class="text-muted">Chưa chọn phòng chat</h5>
+                    <p class="text-muted small">Chọn một phòng chat từ danh sách bên trái để xem tin nhắn</p>
+                </div>
+            </div>
+
+            <!-- Message Input -->
+            <div class="p-3 border-top bg-white" id="messageInputContainer" style="display: none;">
+                <div class="d-flex gap-2 align-items-center">
+                    <div class="flex-grow-1">
+                        <input id="messageInput" class="form-control" placeholder="Nhập tin nhắn của bạn..."
+                               onkeypress="handleKeyPress(event)">
+                    </div>
+                    <button class="btn btn-primary px-4" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane me-2"></i>Gửi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Chat Room Modal -->
+<div class="modal fade" id="createChatRoomModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tạo phòng chat mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                @await Html.PartialAsync("_CreateChatRoomPartial", new ChatRoom())
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="createChatRoom()">Tạo phòng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedProject = null;
+    let selectedRoom = null;
+    let currentProjectName = '';
+
+    // ----------------------------------------------
+    // PROJECT MANAGEMENT
+    // ----------------------------------------------
+    function selectProject(projectId, element) {
+        selectedProject = projectId;
+        currentProjectName = element.querySelector('strong').textContent;
+
+        // Active UI
+        document.querySelectorAll(".project-item").forEach(e => e.classList.remove("active-item"));
+        element.classList.add("active-item");
+
+        // Enable chat room features
+        document.getElementById('addChatRoomBtn').disabled = false;
+        document.getElementById('chatRoomSearch').disabled = false;
+
+        // Clear previous room selection
+        selectedRoom = null;
+        document.getElementById("roomTitle").innerText = "Chưa chọn phòng";
+        document.getElementById("roomInfo").innerText = "Chọn một phòng chat để bắt đầu trò chuyện";
+        document.getElementById("messageInputContainer").style.display = "none";
+        document.getElementById("messageBox").innerHTML = `
+            <div class="text-center mt-5">
+                <div class="mb-3">
+                    <i class="fas fa-comments fa-3x text-muted"></i>
+                </div>
+                <h5 class="text-muted">Chọn phòng chat</h5>
+                <p class="text-muted small">Chọn một phòng chat từ danh sách bên trái để xem tin nhắn</p>
+            </div>
+        `;
+
+        // Load chat rooms
+        fetch(`/ChatRoom/Index?projectId=${projectId}`)
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById("chatRoomList").innerHTML = html;
+            });
+    }
+
+    // ----------------------------------------------
+    // CHAT ROOM MANAGEMENT
+    // ----------------------------------------------
+    function showCreateChatRoomModal() {
+        if (!selectedProject) {
+            alert('Vui lòng chọn dự án trước');
+            return;
+        }
+        // Reset form
+        document.getElementById('ChatRoom_ProjectId').value = selectedProject;
+        new bootstrap.Modal(document.getElementById('createChatRoomModal')).show();
+    }
+
+    // function createChatRoom() {
+    //     const name = document.getElementById('chatRoomName').value;
+    //     const description = document.getElementById('chatRoomDescription').value;
+
+    //     if (!name.trim()) {
+    //         alert('Vui lòng nhập tên phòng chat');
+    //         return;
+    //     }
+
+    //     TODO: Triển khai API tạo phòng chat sau
+    //     console.log('Tạo phòng chat:', { projectId: selectedProject, name, description });
+    //     alert('Tính năng tạo phòng chat sẽ được triển khai sau');
+
+    //     Tạm thời đóng modal
+    //     bootstrap.Modal.getInstance(document.getElementById('createChatRoomModal')).hide();
+    // }
+
+    // ----------------------------------------------
+    // MESSAGE MANAGEMENT (GIỮ NGUYÊN)
+    // ----------------------------------------------
+    function selectRoom(roomId, roomName, element) {
+        selectedRoom = roomId;
+        document.getElementById("roomTitle").innerText = roomName;
+        document.getElementById("roomInfo").innerText = `Trong dự án: ${currentProjectName}`;
+
+        // Active UI
+        document.querySelectorAll(".chat-room-item").forEach(e => e.classList.remove("active-item"));
+        element.classList.add("active-item");
+
+        // Show message input
+        document.getElementById("messageInputContainer").style.display = "block";
+
+        // Lấy tin nhắn thực từ server
+        fetch(`/ChatRoom/Room?id=${roomId}`)
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById("messageBox").innerHTML = html;
+                const box = document.getElementById("messageBox");
+                box.scrollTop = box.scrollHeight;
+            });
+    }
+
+    function sendMessage() {
+        if (!selectedRoom) return;
+
+        const content = document.getElementById("messageInput").value;
+        if (!content.trim()) return;
+
+        fetch(`/ChatRoom/SendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chatRoomId: selectedRoom, content })
+        }).then(res => {
+            if(res.ok){
+                document.getElementById("messageInput").value = "";
+                // Reload message thực từ server
+                selectRoom(selectedRoom, document.getElementById("roomTitle").innerText,
+                           document.querySelector(".chat-room-item.active-item"));
+            }
+        });
+    }
+
+    // ----------------------------------------------
+    // UTILITY FUNCTIONS
+    // ----------------------------------------------
+    function handleKeyPress(event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
+        }
+    }
+
+    // Search functionality
+    document.getElementById('projectSearch').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        document.querySelectorAll('.project-item').forEach(item => {
+            const projectName = item.querySelector('strong').textContent.toLowerCase();
+            item.style.display = projectName.includes(searchTerm) ? 'flex' : 'none';
+        });
+    });
+
+    document.getElementById('chatRoomSearch').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        document.querySelectorAll('.chat-room-item').forEach(item => {
+            const roomName = item.querySelector('strong').textContent.toLowerCase();
+            item.style.display = roomName.includes(searchTerm) ? 'block' : 'none';
+        });
+    });
+
+    // ---------------------------
+    // CREATE ROOM
+    // ---------------------------
+    function createChatRoom() {
+        const name = document.getElementById("chatRoomName").value;
+        const projectId = selectedProject;
+
+        if (!name.trim()) {
+            alert("Tên phòng không được để trống");
+            return;
+        }
+
+        fetch("/ChatRoom/Create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ projectId, name })
+        })
+        .then(res => res.ok ? res.json() : Promise.reject())
+        .then(() => {
+            bootstrap.Modal.getInstance(document.getElementById("createChatRoomModal")).hide();
+            loadChatRooms();
+        });
+    }
+
+    function loadChatRooms() {
+        fetch(`/ChatRoom/Index?projectId=${selectedProject}`)
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById("chatRoomList").innerHTML = html;
+            });
+    }
+
+    // ---------------------------
+    // UPDATE ROOM NAME
+    // ---------------------------
+    function editChatRoom(event, roomId, oldName) {
+        event.stopPropagation();
+
+        const newName = prompt("Nhập tên mới:", oldName);
+        if (!newName || !newName.trim()) return;
+
+        fetch("/ChatRoom/UpdateName", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chatRoomId: roomId, newName })
+        })
+        .then(res => res.ok ? loadChatRooms() : alert("Không tìm thấy phòng"));
+    }
+
+    // ---------------------------
+    // DELETE ROOM
+    // ---------------------------
+    function deleteChatRoom(event, roomId) {
+        event.stopPropagation();
+
+        if (!confirm("Bạn có chắc muốn xóa phòng chat này?")) return;
+
+        fetch(`/ChatRoom/Delete?id=${roomId}`, { method: "DELETE" })
+            .then(res => res.ok ? loadChatRooms() : alert("Không tìm thấy phòng"));
+    }
+
+</script>
+
+<style>
+    .hover-bg:hover {
+        background-color: #f8f9fa;
+        cursor: pointer;
+        border-radius: 8px;
+    }
+
+    .active-item {
+        background-color: #e3f2fd !important;
+        border-radius: 8px;
+        border-left: 4px solid #0d6efd;
+    }
+
+    .truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 80%;
+    }
+
+    #messageBox {
+        scroll-behavior: smooth;
+        background: radial-gradient(circle at 20% 20%, rgba(120, 119, 198, 0.03) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 119, 198, 0.03) 0%, transparent 50%);
+    }
+
+    .message-item {
+        transition: all 0.2s ease;
+    }
+
+        .message-item:hover {
+            transform: translateX(2px);
+        }
+
+    /* Custom scrollbar */
+    #projectList::-webkit-scrollbar,
+    #chatRoomList::-webkit-scrollbar,
+    #messageBox::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    #projectList::-webkit-scrollbar-track,
+    #chatRoomList::-webkit-scrollbar-track,
+    #messageBox::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    #projectList::-webkit-scrollbar-thumb,
+    #chatRoomList::-webkit-scrollbar-thumb,
+    #messageBox::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+
+        #projectList::-webkit-scrollbar-thumb:hover,
+        #chatRoomList::-webkit-scrollbar-thumb:hover,
+        #messageBox::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+</style>

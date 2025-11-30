@@ -1,8 +1,281 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewBag.Title = "Trang chủ";
+    Layout = "~/Views/Shared/_Home.cshtml";
+    var currentUserEmail = ViewBag.CurrentUserEmail as string;
 }
+@model IEnumerable<Project_Management.Models.Project>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Top bar -->
+@* <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 id="dashboard">Dashboard</h3>
+    <div class="d-flex gap-3 align-items-center">
+
+        <div class="position-relative">
+            <button class="btn btn-light"><i class="fa fa-bell"></i> <span class="badge bg-danger rounded-pill">3</span></button>
+        </div>
+        <div class="input-group" style="width:340px">
+            <input class="form-control form-control-sm" placeholder="Tìm dự án, task, thành viên...">
+        </div>
+    </div>
+</div> *@
+
+<!-- Summary cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small">Dự án</div>
+                    <h4>@Model.Count()</h4>
+                </div>
+                <div><i class="fa fa-folder fa-2x text-primary"></i></div>
+            </div>
+            <div class="mt-2 small text-muted">Dự án của bản thân</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small">Công việc</div>
+                    <h4>@ViewBag.TotalTasks.Count</h4>
+                </div>
+                <div><i class="fa fa-tasks fa-2x text-warning"></i></div>
+            </div>
+            <div class="mt-2 small text-muted">Công việc đang đảm nhiệm</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small">Nhân sự</div>
+                    <h4>@ViewBag.TotalMembers.Count</h4>
+                </div>
+                <div><i class="fa fa-users fa-2x text-success"></i></div>
+            </div>
+            <div class="mt-2 small text-muted">Tổng số lượng người dùng</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small">Tiến độ trung bình</div>
+                    <h4>0%</h4>
+                </div>
+                <div><i class="fa fa-chart-line fa-2x text-info"></i></div>
+            </div>
+            <div class="mt-2 small text-muted">Chức năng hiện chưa có</div>
+        </div>
+    </div>
 </div>
+
+
+<!-- Projects list and Kanban preview -->
+<div class="row">
+    <div class="col-lg-12 mb-4">
+        <div class="mb-3">
+            <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#createProjectModal"><i class="fa fa-plus me-1"></i> Tạo dự án</button>
+        </div>
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5>Danh sách dự án</h5>
+                <small class="text-muted">Sắp xếp: Mới nhất</small>
+            </div>
+            <ul class="list-group list-group-flush">
+                @if (Model != null && Model.Count() > 0)
+                {
+                    @foreach (var project in Model)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <!-- Cột thông tin -->
+                            <div>
+                                <strong>@project.Name</strong>
+                                <span class="badge bg-light text-dark">Từ ngày: @project.StartDate - Đến: @project.EndDate</span>
+                                
+                                <br />
+                                <small class="text-muted">
+                                    PM: @project.CreatedByEmail |
+                                    @project.Methodology |
+                                    @project.Objectives.Count Công việc
+                                </small>
+                            </div>
+
+                            <!-- Cột trạng thái + hành động -->
+                            <div class="text-end">
+                                <div><small class="text-muted">@project.Status</small></div>
+                                <div class="mt-2 d-flex gap-1 justify-content-end">
+                                    <!-- Mở -->
+                                    <a class="btn btn-sm btn-outline-primary"
+
+                                       asp-action="Detail"
+                                       asp-route-id="@project.ProjectId">Mở</a>
+
+                                    <!-- Sửa -->
+                                    <a class="btn btn-sm btn-outline-warning"
+                                       asp-action="Update"
+                                       asp-route-id="@project.ProjectId">Cập nhật</a>
+
+                                    <!-- Kanban -->
+                                    <a asp-action="Kanban" 
+                                       asp-controller="Objective" 
+                                       asp-route-projectId="@project.ProjectId" 
+                                       class="btn btn-sm btn-outline-secondary">Bảng Kanban</a>
+
+                                    <!-- Xóa -->
+                                    <form asp-action="Delete"
+                                          asp-route-id="@project.ProjectId" asp-route-email="@currentUserEmail"
+                                          method="post"
+                                          onsubmit="return confirm('Bạn có chắc muốn xóa dự án này không?');"
+                                          class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                }
+                else
+                {
+                    <li class="list-group-item">
+                        <strong>Chưa có dự án nào</strong>
+                    </li>
+                }
+            </ul>
+
+        </div>
+    </div>
+
+    @* <div class="col-lg-12">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5>Preview Kanban - Project: Website bán hàng</h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="openFullKanban(1)"><i class="fa fa-expand"></i> Mở toàn màn hình</button>
+                </div>
+            </div>
+            <div class="row g-3">
+                <div class="col-3">
+                    <div class="kanban-column">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong>Todo</strong>
+                            <span class="badge bg-secondary">6</span>
+                        </div>
+                        <div class="mb-2 card-task p-2 mb-2 bg-white shadow-sm rounded">
+                            <div class="d-flex justify-content-between">
+                                <div><strong>Thiết kế UI</strong></div>
+                                <div><span class="badge badge-priority-low">Low</span></div>
+                            </div>
+                            <div class="small text-muted">Assignee: TB | Due: 2025-11-02</div>
+                        </div>
+                        <div class="card-task p-2 mb-2 bg-white shadow-sm rounded">
+                            <div class="d-flex justify-content-between">
+                                <div><strong>Setup DB</strong></div>
+                                <div><span class="badge badge-priority-high">High</span></div>
+                            </div>
+                            <div class="small text-muted">Assignee: -- | Due: 2025-10-30 <span class="task-due-soon">(sắp đến)</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-3">
+                    <div class="kanban-column">
+                        <strong>In Progress</strong>
+                        <div class="card-task p-2 mt-2 bg-white shadow-sm rounded">
+                            <div class="d-flex justify-content-between"><div><strong>API Auth</strong></div><div><span class="badge bg-warning text-dark">Normal</span></div></div>
+                            <div class="small text-muted">Assignee: NV A | Due: 2025-11-05</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-3">
+                    <div class="kanban-column">
+                        <strong>Review</strong>
+                        <div class="card-task p-2 mt-2 bg-white shadow-sm rounded">
+                            <div class="d-flex justify-content-between"><div><strong>Unit tests</strong></div><div><span class="badge bg-info text-dark">Normal</span></div></div>
+                            <div class="small text-muted">Assignee: TP | Due: 2025-11-01</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-3">
+                    <div class="kanban-column">
+                        <strong>Done</strong>
+                        <div class="small text-muted mt-2">2 completed</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> *@
+</div>
+
+<!-- Chat & Reports Row -->
+@* <div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>Chat - Project: Website bán hàng</h5>
+            <div class="chat-box mb-3" id="chatBox">
+                <div class="d-flex mb-2">
+                    <div class="me-2 avatar">TB</div>
+                    <div>
+                        <strong>Tran B</strong> <div class="small text-muted">10:20</div>
+                        <div>Đã push branch feature/login</div>
+                    </div>
+                </div>
+                <div class="d-flex mb-2 justify-content-end">
+                    <div class="text-end">
+                        <strong>Nguyen A</strong> <div class="small text-muted">10:25</div>
+                        <div>Đã nhận, tôi review sau.</div>
+                    </div>
+                    <div class="ms-2 avatar">NA</div>
+                </div>
+            </div>
+            <div class="d-flex">
+                <input class="form-control form-control-sm me-2" placeholder="Gửi tin nhắn vào group...">
+                <button class="btn btn-primary btn-sm">Gửi</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>Báo cáo tiến độ nhanh</h5>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead><tr><th>Task</th><th>Assignee</th><th>Status</th><th>Due</th></tr></thead>
+                    <tbody>
+                        <tr><td>API Auth</td><td>Nguyen A</td><td><span class="badge bg-warning text-dark">InProgress</span></td><td>2025-11-05</td></tr>
+                        <tr><td>Setup DB</td><td>--</td><td><span class="badge bg-secondary">Todo</span></td><td class="task-due-soon">2025-10-30</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-2 small text-muted">Bạn có thể lọc theo Project / Assignee / Priority</div>
+        </div>
+    </div>
+</div> *@
+
+<!-- Create Project Modal -->
+<div class="modal fade" id="createProjectModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Tạo dự án mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                @await Html.PartialAsync("_CreateProjectPartial", new Project_Management.Models.Project())
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function openProject(id){
+            alert('Mở trang dự án id=' + id);
+        }
+        function openFullKanban(id){
+            alert('Mở Kanban toàn màn hình cho project ' + id);
+        }
+    </script>
+}

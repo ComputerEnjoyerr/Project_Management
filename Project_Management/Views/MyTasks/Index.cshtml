@@ -1,0 +1,138 @@
+﻿@model IEnumerable<Project_Management.Models.Objective>
+@{
+    ViewBag.Title = "Công việc của tôi";
+    Layout = "~/Views/Shared/_Home.cshtml";
+    var projects = ViewBag.Projects as List<Project_Management.Models.Project>;
+    string currentUser = ViewBag.CurrentUser;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold">Công việc của tôi</h3>
+    <div class="text-muted small">Xin chào, <strong>@currentUser</strong></div>
+</div>
+
+<!-- Filter Bar -->
+<form method="get" class="filter-bar bg-white p-3 rounded shadow-sm mb-4 d-flex flex-wrap gap-3 align-items-center">
+    <div>
+        <label class="form-label mb-1 small text-muted">Trạng thái</label>
+        <select name="status" class="form-select form-select-sm" style="width:150px">
+            <option value="">Tất cả</option>
+            <option value="Todo">Todo</option>
+            <option value="InProgress">In Progress</option>
+            <option value="Review">Review</option>
+            <option value="Done">Done</option>
+        </select>
+    </div>
+
+    <div>
+        <label class="form-label mb-1 small text-muted">Ưu tiên</label>
+        <select name="priority" class="form-select form-select-sm" style="width:150px">
+            <option value="">Tất cả</option>
+            <option>Low</option>
+            <option>Normal</option>
+            <option>High</option>
+            <option>Critical</option>
+        </select>
+    </div>
+
+    <div>
+        <label class="form-label mb-1 small text-muted">Dự án</label>
+        <select name="projectId" class="form-select form-select-sm" style="width:200px">
+            <option value="">Tất cả</option>
+            @if (projects != null)
+            {
+                @foreach (var p in projects)
+                {
+                    <option value="@p.ProjectId">@p.Name</option>
+                }
+            } else
+            {
+                <option disabled>Không có dự án</option>
+            }
+
+        </select>
+    </div>
+
+    <div class="mt-3 mt-md-4">
+        <button type="submit" class="btn btn-sm btn-outline-primary">
+            <i class="fa fa-filter"></i> Lọc
+        </button>
+    </div>
+</form>
+
+<!-- Task Cards -->
+@if (Model.Any())
+{
+    <div class="row g-3">
+        @foreach (var task in Model)
+        {
+            var badgeClass = task.Status switch
+            {
+                "Todo" => "bg-secondary",
+                "InProgress" => "bg-warning text-dark",
+                "Review" => "bg-info text-dark",
+                "Done" => "bg-success",
+                _ => "bg-light text-dark"
+            };
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card p-3 task-card shadow-sm border-0 hover-shadow" style="cursor:pointer"
+                     onclick="openTaskDetail(@task.ObjectiveId)">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">@task.Title</h6>
+                        <span class="badge @badgeClass">@task.Status</span>
+                    </div>
+                    <div class="small text-muted mt-1">@task.Project?.Name</div>
+                    <div class="small">
+                        @if (task.Status == "Done")
+                        {
+                            <span>Hoàn thành: <strong class="text-success">@task.CompletedAt?.ToString("yyyy-MM-dd")</strong></span>
+                        }
+                                else
+                        {
+                            <span>Hạn: <strong class="text-danger">@task.DueDate?.ToString("yyyy-MM-dd")</strong></span>
+                        }
+                    </div>
+                    <div class="mt-2 d-flex justify-content-between align-items-center">
+                        <div class="small text-muted">
+                            Ưu tiên:
+                            <strong class="text-@(task.Priority == "High" || task.Priority == "Critical" ? "danger" : "secondary")">@task.Priority</strong>
+                        </div>
+
+                        @if (task.Status != "Done")
+                        {
+                            <form asp-action="UpdateStatus" method="post" class="m-0">
+                                <input type="hidden" name="id" value="@task.ObjectiveId" />
+                                <input type="hidden" name="status" value="Done" />
+                                <button type="submit" class="btn btn-sm btn-outline-success">Hoàn thành</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <button class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); viewHistory(@task.ObjectiveId)">Lịch sử</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center text-muted my-5">
+        <i class="fa fa-inbox fa-3x mb-3"></i>
+        <div>Không có công việc nào phù hợp</div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function openTaskDetail(id) {
+            window.location.href = '/Objective/Details/' + id;
+        }
+
+        // function viewHistory(id) {
+        //     window.location.href = '/TaskHistory/Index?taskId=' + id;
+        // }
+    </script>
+}
